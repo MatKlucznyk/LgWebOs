@@ -1,0 +1,7 @@
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\bin\Debug\LgWebOs.dll
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\bin\Debug\LgWebOs.pdb
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\bin\Debug\SimplSharpCustomAttributesInterface.dll
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\bin\Debug\SimplSharpHelperInterface.dll
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\obj\Debug\ResolveAssemblyReference.cache
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\obj\Debug\LgWebOs.dll
+D:\Programming\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\obj\Debug\LgWebOs.pdb
