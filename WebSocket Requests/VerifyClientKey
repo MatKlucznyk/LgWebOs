@@ -1,0 +1,2 @@
+{"type":"request","id":"getInputSocket","uri":"ssap://com.webos.service.networkinput/getPointerInputSocket"}
+{"type":"register","id":"register_1","payload":{"client-key":"3427419cae816063d6b96d317abe5f5e"}}

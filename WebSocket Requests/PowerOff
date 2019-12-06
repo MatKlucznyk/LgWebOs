@@ -1,0 +1,5 @@
+{
+    "type": "request",
+    "id": "' + i +'",
+    "uri": "ssap://system/turnOff"
+}
