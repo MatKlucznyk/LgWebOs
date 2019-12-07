@@ -8,18 +8,19 @@
 #ENABLE_TRACE
 
 Digital_Input PowerOn, PowerOff, _skip_, VolumeUp, VolumeDown, VolumeMuteOn, VolumeMuteOff;
-Digital_Input _skip_, KeyUp, KeyDown, KeyLeft, KeyRight, KeyHome, KeyBack, KeySelect, KeyExit, KeyInfo, KeyRed, KeyGreen, KeyYellow, KeyBlue, KeyPlay, KeyPause, KeyStop;
-Digital_Input _skip_, GetInputs;
-Analog_Input ChangeInput;
+Digital_Input _skip_, KeyUp, KeyDown, KeyLeft, KeyRight, KeyHome, KeyBack, KeySelect, KeyExit, KeyInfo, KeyMenu, KeyRed, KeyGreen, KeyYellow, KeyBlue, KeyPlay, KeyPause, KeyStop;
+Digital_Input _skip_, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9;
+Digital_Input _skip_, GetInputs, GetApps;
+Analog_Input ChangeInput, LaunchApp;
 
 Digital_Output PowerIsOn, PowerIsOff, _skip_, MuteIsOn, MuteIsOff;
 Analog_Output VolumeValue;
-Analog_Output _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, CurrentInput;
-String_Output InputNamesXsig, InputIconsXsig;
+Analog_Output _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, CurrentInput;
+String_Output InputNamesXsig, InputIconsXsig, AppNamesXsig, AppIconsXsig;
 
 Display webOsDisplay;
 
-String_Parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, ID[100], IpAddress[100], MacAddress[100];
+String_Parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, ID[100], IpAddress[100], MacAddress[100];
 Integer_Parameter Port, VolumeRepeatTime;
 
 #BEGIN_PARAMETER_PROPERTIES Port
@@ -128,6 +129,11 @@ Push KeyInfo
     webOsDisplay.SendKey("INFO");
 }
 
+Push KeyMenu
+{
+    webOsDisplay.SendKey("MENU");
+}
+
 Push KeyRed
 {
     webOsDisplay.SendKey("RED");
@@ -162,14 +168,75 @@ Push KeyStop
     webOsDisplay.SendKey("STOP");
 }
 
+Push Key0
+{
+    webOsDisplay.SendKey("0");
+}
+
+Push Key1
+{
+    webOsDisplay.SendKey("1");
+}
+
+Push Key2
+{
+    webOsDisplay.SendKey("2");
+}
+
+Push Key3
+{
+    webOsDisplay.SendKey("3");
+}
+
+Push Key4
+{
+    webOsDisplay.SendKey("4");
+}
+
+Push Key5
+{
+    webOsDisplay.SendKey("5");
+}
+
+Push Key6
+{
+    webOsDisplay.SendKey("6");
+}
+
+Push Key7
+{
+    webOsDisplay.SendKey("7");
+}
+
+Push Key8
+{
+    webOsDisplay.SendKey("8");
+}
+
+Push Key9
+{
+    webOsDisplay.SendKey("9");
+}
+
 Push GetInputs
 {
     webOsDisplay.GetInputs();
 }
 
+Push GetApps
+{
+    webOsDisplay.GetApps();
+
+}
+
 Change ChangeInput
 {
     webOsDisplay.ChangeInput(ChangeInput);
+}
+
+Change LaunchApp
+{
+    webOsDisplay.LaunchApp(LaunchApp);
 }
 
 callback function newPowerState(integer state)
@@ -220,6 +287,16 @@ callback function newExternalInputIcons(string xsig)
     InputIconsXsig = xsig;
 }
 
+callback function newAppNames(string xsig)
+{
+    AppNamesXsig = xsig;
+}
+
+callback function newAppIcons(string xsig)
+{
+    AppIconsXsig = xsig;
+}
+
 Function Main()
 {
     WaitForInitializationComplete();
@@ -230,6 +307,8 @@ Function Main()
     RegisterDelegate(webOsDisplay, onCurrentInputValue, newCurrentInputValue);
     RegisterDelegate(webOsDisplay, onExternalInputNames, newExternalInputNames);
     RegisterDelegate(webOsDisplay, onExternalInputIcons, newExternalInputIcons);
+    RegisterDelegate(webOsDisplay, onAppIcons, newAppIcons);
+    RegisterDelegate(webOsDisplay, onAppNames, newAppNames);
 
 
     webOsDisplay.Initialize(ID, IpAddress, Port, MacAddress);

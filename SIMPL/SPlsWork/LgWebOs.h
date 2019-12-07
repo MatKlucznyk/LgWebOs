@@ -2,6 +2,7 @@ namespace LgWebOs;
         // class declarations
          class Display;
          class ExternalInput;
+         class App;
      class Display 
     {
         // class delegates
@@ -27,6 +28,8 @@ namespace LgWebOs;
         FUNCTION SendKey ( STRING name );
         FUNCTION ChangeInput ( INTEGER input );
         FUNCTION GetInputs ();
+        FUNCTION LaunchApp ( INTEGER index );
+        FUNCTION GetApps ();
         STRING_FUNCTION ToString ();
         SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
 
@@ -45,6 +48,25 @@ namespace LgWebOs;
     };
 
      class ExternalInput 
+    {
+        // class delegates
+
+        // class events
+
+        // class functions
+        STRING_FUNCTION ToString ();
+        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
+
+        // class variables
+        INTEGER __class_id__;
+
+        // class properties
+        STRING id[];
+        STRING label[];
+        STRING icon[];
+    };
+
+     class App 
     {
         // class delegates
 
