@@ -17,25 +17,6 @@ namespace LgWebOs
 {
     public class Display
     {
-        public delegate void PowerState(ushort state);
-        public delegate void VolumeValue(ushort value);
-        public delegate void VolumeMuteState(ushort state);
-        public delegate void CurrentInputValue(ushort valuet);
-        public delegate void ExternalInputNames(SimplSharpString xsig);
-        public delegate void ExternalInputIcons(SimplSharpString xsig);
-        public delegate void AppNames(SimplSharpString xsig);
-        public delegate void AppIcons(SimplSharpString xsig);
-
-        public PowerState onPowerState { get; set; }
-        public VolumeValue onVolumeValue { get; set; }
-        public VolumeMuteState onVolumeMuteState { get; set; }
-        public CurrentInputValue onCurrentInputValue { get; set; }
-        public ExternalInputNames onExternalInputNames { get; set; }
-        public ExternalInputIcons onExternalInputIcons { get; set; }
-        public AppNames onAppNames { get; set; }
-        public AppIcons onAppIcons { get; set; }
-
-
         private WebSocketClient _socketClient;
         private UDPServer _udpServer;
         private CTimer WaitForConnectionTimer;
@@ -47,8 +28,9 @@ namespace LgWebOs
         private bool _isRegistered;
         private bool _isPoweredOn;
         private string _currentInput;
-        private bool _debugMode = true;
+        private bool _debugMode = false;
         private bool _sentConnection;
+        private bool _isBusy;
         private int _pingCount = 0;
         private uint _port;
         private string _id;
@@ -57,11 +39,10 @@ namespace LgWebOs
         private string _clientKey;
         private string _keyFilePath;
 
-        //update with new strng in notepad file...wrong permissions again....
         private string _getClientKey()
         {
             return
-                "{\"type\":\"register\",\"id\":\"register_0\",\"payload\":{\"forcePairing\":false,\"pairingType\":\"PROMPT\",\"manifest\":{\"manifestVersion\":1,\"appVersion\":\"1.1\",\"signed\":{\"created\":\"20140509\",\"appId\":\"com.lge.test\",\"vendorId\":\"com.lge\",\"localizedAppNames\":{\"\":\"LG Remote App\"},\"localizedVendorNames\":{\"\":\"LG Electronics\"},\"permissions\":[\"TEST_SECURE\",\"CONTROL_INPUT_TEXT\",\"CONTROL_MOUSE_AND_KEYBOARD\",\"READ_INSTALLED_APPS\",\"LAUNCH_WEBAPP\",\"READ_LGE_SDX\",\"READ_NOTIFICATIONS\",\"SEARCH\",\"WRITE_SETTINGS\",\"WRITE_NOTIFICATION_ALERT\",\"CONTROL_POWER\",\"READ_CURRENT_CHANNEL\",\"READ_RUNNING_APPS\",\"READ_UPDATE_INFO\",\"UPDATE_FROM_REMOTE_APP\",\"READ_LGE_TV_INPUT_EVENTS\",\"READ_TV_CURRENT_TIME\",\"READ_INPUT_DEVICE_LIST\"],\"serial\":\"2f930e2d2cfe083771f68e4fe7bb07\"},\"permissions\":[\"LAUNCH\",\"READ_LGE_SDX\",\"READ_LGE_TV_INPUT_EVENTS\",\"SEARCH\",\"CONTROL_MOUSE_AND_KEYBOARD\",\"LAUNCH_WEBAPP\",\"APP_TO_APP\",\"CLOSE\",\"TEST_OPEN\",\"TEST_PROTECTED\",\"CONTROL_AUDIO\",\"CONTROL_DISPLAY\",\"CONTROL_INPUT_JOYSTICK\",\"CONTROL_INPUT_MEDIA_RECORDING\",\"CONTROL_INPUT_MEDIA_PLAYBACK\",\"CONTROL_INPUT_TV\",\"CONTROL_POWER\",\"READ_APP_STATUS\",\"READ_CURRENT_CHANNEL\",\"READ_INPUT_DEVICE_LIST\",\"READ_NETWORK_STATE\",\"READ_RUNNING_APPS\",\"READ_TV_CHANNEL_LIST\",\"WRITE_NOTIFICATION_TOAST\",\"READ_POWER_STATE\",\"READ_COUNTRY_INFO\"],\"signatures\":[{\"signatureVersion\":1,\"signature\":\"eyJhbGdvcml0aG0iOiJSU0EtU0hBMjU2Iiwia2V5SWQiOiJ0ZXN0LXNpZ25pbmctY2VydCIsInNpZ25hdHVyZVZlcnNpb24iOjF9.hrVRgjCwXVvE2OOSpDZ58hR+59aFNwYDyjQgKk3auukd7pcegmE2CzPCa0bJ0ZsRAcKkCTJrWo5iDzNhMBWRyaMOv5zWSrthlf7G128qvIlpMT0YNY+n/FaOHE73uLrS/g7swl3/qH/BGFG2Hu4RlL48eb3lLKqTt2xKHdCs6Cd4RMfJPYnzgvI4BNrFUKsjkcu+WD4OO2A27Pq1n50cMchmcaXadJhGrOqH5YmHdOCj5NSHzJYrsW0HPlpuAx/ECMeIZYDh6RMqaFM2DXzdKX9NmmyqzJ3o/0lkk/N97gfVRLW5hA29yeAwaCViZNCP8iC9aO0q9fQojoa7NQnAtw==\"}]}}}";
+                "{\"type\":\"register\",\"id\":\"register_0\",\"payload\":{\"forcePairing\":false,\"pairingType\":\"PROMPT\",\"manifest\":{\"manifestVersion\":1,\"appVersion\":\"1.1\",\"signed\":{\"created\":\"20140509\",\"appId\":\"com.lge.test\",\"vendorId\":\"com.lge\",\"localizedAppNames\":{\"\":\"LG Remote App\"},\"localizedVendorNames\":{\"\":\"LG Electronics\"},\"permissions\":[\"TEST_SECURE\",\"CONTROL_INPUT_TEXT\",\"CONTROL_MOUSE_AND_KEYBOARD\",\"READ_INSTALLED_APPS\",\"LAUNCH_WEBAPP\",\"READ_LGE_SDX\",\"READ_NOTIFICATIONS\",\"SEARCH\",\"WRITE_SETTINGS\",\"WRITE_NOTIFICATION_ALERT\",\"CONTROL_POWER\",\"READ_CURRENT_CHANNEL\",\"READ_RUNNING_APPS\",\"READ_UPDATE_INFO\",\"UPDATE_FROM_REMOTE_APP\",\"READ_LGE_TV_INPUT_EVENTS\",\"READ_TV_CURRENT_TIME\",\"READ_INPUT_DEVICE_LIST\"],\"serial\":\"2f930e2d2cfe083771f68e4fe7bb07\"},\"permissions\":[\"LAUNCH\",\"READ_INSTALLED_APPS\",\"READ_LGE_SDX\",\"READ_LGE_TV_INPUT_EVENTS\",\"SEARCH\",\"CONTROL_MOUSE_AND_KEYBOARD\",\"LAUNCH_WEBAPP\",\"APP_TO_APP\",\"CLOSE\",\"TEST_OPEN\",\"TEST_PROTECTED\",\"CONTROL_AUDIO\",\"CONTROL_DISPLAY\",\"CONTROL_INPUT_JOYSTICK\",\"CONTROL_INPUT_MEDIA_RECORDING\",\"CONTROL_INPUT_MEDIA_PLAYBACK\",\"CONTROL_INPUT_TV\",\"CONTROL_POWER\",\"READ_APP_STATUS\",\"READ_CURRENT_CHANNEL\",\"READ_INPUT_DEVICE_LIST\",\"READ_NETWORK_STATE\",\"READ_RUNNING_APPS\",\"READ_TV_CHANNEL_LIST\",\"WRITE_NOTIFICATION_TOAST\",\"READ_POWER_STATE\",\"READ_COUNTRY_INFO\"],\"signatures\":[{\"signatureVersion\":1,\"signature\":\"eyJhbGdvcml0aG0iOiJSU0EtU0hBMjU2Iiwia2V5SWQiOiJ0ZXN0LXNpZ25pbmctY2VydCIsInNpZ25hdHVyZVZlcnNpb24iOjF9.hrVRgjCwXVvE2OOSpDZ58hR+59aFNwYDyjQgKk3auukd7pcegmE2CzPCa0bJ0ZsRAcKkCTJrWo5iDzNhMBWRyaMOv5zWSrthlf7G128qvIlpMT0YNY+n/FaOHE73uLrS/g7swl3/qH/BGFG2Hu4RlL48eb3lLKqTt2xKHdCs6Cd4RMfJPYnzgvI4BNrFUKsjkcu+WD4OO2A27Pq1n50cMchmcaXadJhGrOqH5YmHdOCj5NSHzJYrsW0HPlpuAx/ECMeIZYDh6RMqaFM2DXzdKX9NmmyqzJ3o/0lkk/N97gfVRLW5hA29yeAwaCViZNCP8iC9aO0q9fQojoa7NQnAtw==\"}]}}}";
 
         }
         private string _verifyClientKey()
@@ -72,8 +53,33 @@ namespace LgWebOs
                 return string.Empty;
         }
 
+        public delegate void Busy(ushort state);
+        public delegate void PowerState(ushort state);
+        public delegate void VolumeValue(ushort value);
+        public delegate void VolumeMuteState(ushort state);
+        public delegate void CurrentInputValue(ushort valuet);
+        public delegate void ExternalInputNames(SimplSharpString xsig);
+        public delegate void ExternalInputIcons(SimplSharpString xsig);
+        public delegate void AppNames(SimplSharpString xsig);
+        public delegate void AppIcons(SimplSharpString xsig);
+
+        public Busy onBusy { get; set; }
+        public PowerState onPowerState { get; set; }
+        public VolumeValue onVolumeValue { get; set; }
+        public VolumeMuteState onVolumeMuteState { get; set; }
+        public CurrentInputValue onCurrentInputValue { get; set; }
+        public ExternalInputNames onExternalInputNames { get; set; }
+        public ExternalInputIcons onExternalInputIcons { get; set; }
+        public AppNames onAppNames { get; set; }
+        public AppIcons onAppIcons { get; set; }
+
+        public ushort DebugMode { get { return Convert.ToUInt16(_debugMode); } set { _debugMode = Convert.ToBoolean(value); } }
+
         public void Initialize(string id, string ipAddress, ushort port, string macAddress)
         {
+            _isBusy = true;
+            if (onBusy != null)
+                onBusy(1);
 
             _id = id;
             _ipAddress = ipAddress;
@@ -127,6 +133,10 @@ namespace LgWebOs
         {
             if (_isPoweredOn == false)
             {
+                _isBusy = true;
+                if (onBusy != null)
+                    onBusy(1);
+
                 byte[] wolPacket = new byte[1024];
                 int wolPacketIndex = 0;
 
@@ -156,6 +166,10 @@ namespace LgWebOs
         {
             if (_isPoweredOn)
             {
+                _isBusy = true;
+                if (onBusy != null)
+                    onBusy(1);
+
                 SendRequest("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
             }
         }
@@ -166,7 +180,7 @@ namespace LgWebOs
 
             if (_socketClient.Connected)
             {
-                SendRequest(string.Format("{\"type\":\"request\",\"id\":\"setVolume\",\"uri\":\"ssap://audio/setVolume\",\"payload\":{\"volume\":{0}}}", volume));
+                SendRequest("{\"type\":\"request\",\"id\":\"setVolume\",\"uri\":\"ssap://audio/setVolume\",\"payload\":{\"volume\":" + volume + "}}");
             }
         }
 
@@ -250,6 +264,9 @@ namespace LgWebOs
         {
             if (_pingCount >= 2 && !_sentConnection)
             {
+                _isBusy = false;
+                if (onBusy != null)
+                    onBusy(0);
                 _isPoweredOn = false;
                 WaitForConnectionTimer.Stop();
                 WaitForConnectionTimer.Dispose();
@@ -258,7 +275,7 @@ namespace LgWebOs
             {
                 try
                 {
-                    using (HttpClient client = new HttpClient())
+                    /*using (HttpClient client = new HttpClient())
                     {
                         client.Port = Convert.ToInt16(_port);
                         client.KeepAlive = false;
@@ -282,6 +299,16 @@ namespace LgWebOs
                             WaitForConnectionTimer.Dispose();
                             Connect();
                         }
+                    }*/
+                    string response = string.Empty;
+                    CrestronConsole.SendControlSystemCommand(string.Format("ping {0}", _ipAddress), ref response);
+
+                    if (!response.Contains("PING: transmit failed"))
+                    {
+                        _sentConnection = true;
+                        WaitForConnectionTimer.Stop();
+                        WaitForConnectionTimer.Dispose();
+                        Connect();
                     }
                 }
                 catch (Exception e)
@@ -326,6 +353,10 @@ namespace LgWebOs
             {
                 SendRequest(_verifyClientKey());
             }
+
+            _isBusy = false;
+            if (onBusy != null)
+                onBusy(0);
         }
 
         private int SocketDisconnectCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode, object obj)
@@ -337,6 +368,10 @@ namespace LgWebOs
 
                 if (onPowerState != null)
                     onPowerState(0);
+
+                _isBusy = false;
+                if (onBusy != null)
+                    onBusy(0);
             }
 
             return 0;
@@ -353,176 +388,199 @@ namespace LgWebOs
 
         private int SocketRecieveCallBack(byte[] data, uint length, WebSocketClient.WEBSOCKET_PACKET_TYPES opCode, WebSocketClient.WEBSOCKET_RESULT_CODES resultCode)
         {
-            if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
+            try
             {
-                var sData = Encoding.ASCII.GetString(data, 0, data.Length);
-
-                JObject response = JObject.Parse(sData);
-
-                
-                if (response["type"] != null)
+                if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
                 {
-                    if (CleanJson(response["type"].ToString()) == "registered")
+                    var sData = Encoding.ASCII.GetString(data, 0, data.Length);
+
+                    JObject response = JObject.Parse(sData);
+
+
+                    if (response["type"] != null)
                     {
-                        _isRegistered = true;
-
-                        if (response["id"] != null)
+                        if (CleanJson(response["type"].ToString()) == "registered")
                         {
-                            if (CleanJson(response["id"].ToString()) == "register_0")
+                            _isRegistered = true;
+
+                            if (response["id"] != null)
                             {
-                                if (response["payload"]["client-key"] != null)
+                                if (CleanJson(response["id"].ToString()) == "register_0")
                                 {
-                                    _clientKey = CleanJson(response["payload"]["client-key"].ToString());
-
-                                    using (StreamWriter writer = new StreamWriter(File.Create(_keyFilePath)))
+                                    if (response["payload"]["client-key"] != null)
                                     {
-                                        writer.WriteLine(_clientKey);
-                                    }
+                                        _clientKey = CleanJson(response["payload"]["client-key"].ToString());
 
-                                    SendRequest(_verifyClientKey());
+                                        using (StreamWriter writer = new StreamWriter(File.Create(_keyFilePath)))
+                                        {
+                                            writer.WriteLine(_clientKey);
+                                        }
+
+                                        SendRequest(_verifyClientKey());
+                                    }
                                 }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "register_1")
-                            {
-                                SendRequest("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+                                else if (CleanJson(response["id"].ToString()) == "register_1")
+                                {
+                                    SendRequest("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+                                }
                             }
                         }
-                    }
-                    else if (CleanJson(response["type"].ToString()) == "response")
-                    {
-                        if (response["id"] != null)
+                        else if (CleanJson(response["type"].ToString()) == "response")
                         {
-                            if (CleanJson(response["id"].ToString()) == "powerOff" && response["payload"] != null)
+                            if (response["id"] != null)
                             {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                if (CleanJson(response["id"].ToString()) == "powerOff" && response["payload"] != null)
                                 {
-                                    _inputControls.PollConnectionTimer.Stop();
-                                    _inputControls.PollConnectionTimer.Dispose();
-                                    PollClientTimer.Stop();
-                                    PollClientTimer.Dispose();
-                                    _inputControls._socketClient.DisconnectAsync(this);
-                                    _socketClient.DisconnectAsync(this);
-                                }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "getInputSocket")
-                            {
-                                _inputControls = new InputControls(_ipAddress, _port, CleanJson(response["payload"]["socketPath"].ToString()));
-                            }
-                            else if (CleanJson(response["id"].ToString()).Contains("changeInput_"))
-                            {
-                                if(CleanJson(response["payload"]["returnValue"].ToString()) == "true")
-                                {
-                                    _currentInput = CleanJson(response["id"].ToString()).Replace("changeInput_", string.Empty);
-
-                                    if (onCurrentInputValue != null)
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
                                     {
-                                        ExternalInput input = _externalInputs.Find(x => x.id == _currentInput); 
-                                        onCurrentInputValue(Convert.ToUInt16(_externalInputs.IndexOf(input)));
+                                        _inputControls.PollConnectionTimer.Stop();
+                                        _inputControls.PollConnectionTimer.Dispose();
+                                        PollClientTimer.Stop();
+                                        PollClientTimer.Dispose();
+                                        _inputControls._socketClient.DisconnectAsync(this);
+                                        _socketClient.DisconnectAsync(this);
                                     }
                                 }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "getExternalInputs")
-                            {
-                                _externalInputs = JsonConvert.DeserializeObject<List<ExternalInput>>(response["payload"]["devices"].ToString());
-
-                                List<string> inputNames = new List<string>();
-                                List<string> inputIcons = new List<string>();
-
-                                foreach (var input in _externalInputs)
+                                else if (CleanJson(response["id"].ToString()) == "getInputSocket")
                                 {
-                                    inputNames.Add(input.label);
-                                    inputIcons.Add(input.icon);
-                                }
-
-                                if (onExternalInputNames != null)
-                                {
-                                    var encodedBytes = XSig.GetBytes(1, inputNames.ToArray());
-                                    onExternalInputNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
-                                }
-
-                                if (onExternalInputIcons != null)
-                                {
-                                    var encodedBytes = XSig.GetBytes(1, inputIcons.ToArray());
-                                    onExternalInputIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
-                                }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "getAllApps")
-                            {
-                                _apps = JsonConvert.DeserializeObject<List<App>>(response["payload"]["devices"].ToString());
-
-                                List<string> appNames = new List<string>();
-                                List<string> appIcons = new List<string>();
-
-                                foreach (var input in _apps)
-                                {
-                                    appNames.Add(input.label);
-                                    appIcons.Add(input.icon);
-                                }
-
-                                if (onAppNames != null)
-                                {
-                                    var encodedBytes = XSig.GetBytes(1, appNames.ToArray());
-                                    onAppNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
-                                }
-
-                                if (onAppIcons != null)
-                                {
-                                    var encodedBytes = XSig.GetBytes(1, appIcons.ToArray());
-                                    onAppIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
-                                }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "setVolume")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
-                                {
+                                    _inputControls = new InputControls(_ipAddress, _port, CleanJson(response["payload"]["socketPath"].ToString()));
                                     SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
                                 }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "volumeUp")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                else if (CleanJson(response["id"].ToString()).Contains("changeInput_"))
                                 {
-                                    SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
-                                }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "volumeDown")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
-                                {
-                                    SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
-                                }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "getVolume")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
-                                {
-                                    var value = ScaleUp(Convert.ToInt16(CleanJson(response["payload"]["volume"].ToString())));
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        _currentInput = CleanJson(response["id"].ToString()).Replace("changeInput_", string.Empty);
 
-                                    if (onVolumeValue != null)
-                                        onVolumeValue(Convert.ToUInt16(value));
+                                        if (onCurrentInputValue != null)
+                                        {
+                                            ExternalInput input = _externalInputs.Find(x => x.id == _currentInput);
+                                            onCurrentInputValue(Convert.ToUInt16(_externalInputs.IndexOf(input)));
+                                        }
+                                    }
                                 }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "volumeMuteOn")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                else if (CleanJson(response["id"].ToString()) == "getExternalInputs")
                                 {
-                                    if (onVolumeMuteState != null)
-                                        onVolumeMuteState(1);
+                                    _externalInputs = JsonConvert.DeserializeObject<List<ExternalInput>>(response["payload"]["devices"].ToString());
+
+                                    List<string> inputNames = new List<string>();
+                                    List<string> inputIcons = new List<string>();
+
+                                    foreach (var input in _externalInputs)
+                                    {
+                                        inputNames.Add(input.label);
+                                        inputIcons.Add(input.icon.Replace("http:", string.Format("http://{0}", _ipAddress)));
+                                    }
+
+                                    if (onExternalInputNames != null)
+                                    {
+                                        var encodedBytes = XSig.GetBytes(1, inputNames.ToArray());
+                                        onExternalInputNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+
+                                    if (onExternalInputIcons != null)
+                                    {
+                                        var encodedBytes = XSig.GetBytes(1, inputIcons.ToArray());
+                                        onExternalInputIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
                                 }
-                            }
-                            else if (CleanJson(response["id"].ToString()) == "volumeMuteOff")
-                            {
-                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                else if (CleanJson(response["id"].ToString()) == "getAllApps")
                                 {
-                                    if (onVolumeMuteState != null)
-                                        onVolumeMuteState(0);
+                                    _apps = JsonConvert.DeserializeObject<List<App>>(response["payload"]["launchPoints"].ToString());
+
+                                    List<string> appNames = new List<string>();
+                                    List<string> appIcons = new List<string>();
+
+                                    foreach (var input in _apps)
+                                    {
+                                        appNames.Add(input.title);
+                                        appIcons.Add(input.icon.Replace("http:", string.Format("http://{0}", _ipAddress)));
+                                    }
+
+                                    if (onAppNames != null)
+                                    {
+                                        var encodedBytes = XSig.GetBytes(1, appNames.ToArray());
+                                        onAppNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+
+                                    if (onAppIcons != null)
+                                    {
+                                        var encodedBytes = XSig.GetBytes(1, appIcons.ToArray());
+                                        onAppIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "setVolume")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "volumeUp")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "volumeDown")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        SendRequest("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "getVolume")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        var value = ScaleUp(Convert.ToInt16(CleanJson(response["payload"]["volume"].ToString())));
+
+                                        if (onVolumeValue != null)
+                                            onVolumeValue(Convert.ToUInt16(value));
+                                        if (onVolumeMuteState != null)
+                                        {
+                                            if (CleanJson(response["payload"]["muted"].ToString()) == "true")
+                                            {
+                                                onVolumeMuteState(1);
+                                            }
+                                            else if (CleanJson(response["payload"]["muted"].ToString()) == "false")
+                                            {
+                                                onVolumeMuteState(0);
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "volumeMuteOn")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        if (onVolumeMuteState != null)
+                                            onVolumeMuteState(1);
+                                    }
+                                }
+                                else if (CleanJson(response["id"].ToString()) == "volumeMuteOff")
+                                {
+                                    if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                    {
+                                        if (onVolumeMuteState != null)
+                                            onVolumeMuteState(0);
+                                    }
                                 }
                             }
                         }
                     }
                 }
+                return 0;
             }
-            return 0;
+            catch (Exception e)
+            {
+                if (_debugMode)
+                {
+                    ErrorLog.Exception(string.Format("LgWebOs.Display.SocketRecieveCallBacka ID={0} Exeption Occured", _id), e);
+                }
+                return 0;
+            }
         }
 
         private void PollClient(object o)

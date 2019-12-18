@@ -11,17 +11,21 @@ Digital_Input PowerOn, PowerOff, _skip_, VolumeUp, VolumeDown, VolumeMuteOn, Vol
 Digital_Input _skip_, KeyUp, KeyDown, KeyLeft, KeyRight, KeyHome, KeyBack, KeySelect, KeyExit, KeyInfo, KeyMenu, KeyRed, KeyGreen, KeyYellow, KeyBlue, KeyPlay, KeyPause, KeyStop;
 Digital_Input _skip_, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9;
 Digital_Input _skip_, GetInputs, GetApps;
-Analog_Input ChangeInput, LaunchApp;
+Analog_Input SetVolume, ChangeInput, LaunchApp;
 
-Digital_Output PowerIsOn, PowerIsOff, _skip_, MuteIsOn, MuteIsOff;
+Digital_Output PowerIsOn, PowerIsOff, IsBusy, MuteIsOn, MuteIsOff;
 Analog_Output VolumeValue;
-Analog_Output _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, CurrentInput;
+Analog_Output _skip_, _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, CurrentInput;
 String_Output InputNamesXsig, InputIconsXsig, AppNamesXsig, AppIconsXsig;
 
 Display webOsDisplay;
 
-String_Parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, ID[100], IpAddress[100], MacAddress[100];
-Integer_Parameter Port, VolumeRepeatTime;
+String_Parameter _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, ID[100], IpAddress[100], MacAddress[100];
+Integer_Parameter Port, VolumeRepeatTime, DebugMode;
+
+#BEGIN_PARAMETER_PROPERTIES VolumeRepeatTime
+    propDefaultValue=10d;
+#END_PARAMETER_PROPERTIES
 
 #BEGIN_PARAMETER_PROPERTIES Port
     propDefaultValue=3000d;
@@ -229,6 +233,11 @@ Push GetApps
 
 }
 
+change SetVolume
+{
+    webOsDisplay.SetVolume(SetVolume);
+}
+
 Change ChangeInput
 {
     webOsDisplay.ChangeInput(ChangeInput);
@@ -237,6 +246,11 @@ Change ChangeInput
 Change LaunchApp
 {
     webOsDisplay.LaunchApp(LaunchApp);
+}
+
+callback function newBusy(integer state)
+{
+    IsBusy = state;
 }
 
 callback function newPowerState(integer state)
@@ -301,6 +315,9 @@ Function Main()
 {
     WaitForInitializationComplete();
 
+    webOsDisplay.DebugMode = DebugMode;
+
+    RegisterDelegate(webOsDisplay, onBusy, newBusy);
     RegisterDelegate(webOsDisplay, onPowerState, newPowerState);
     RegisterDelegate(webOsDisplay, onVolumeValue, newVolumeValue);
     RegisterDelegate(webOsDisplay, onVolumeMuteState, newVolumeMuteState);

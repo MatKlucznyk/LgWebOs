@@ -105,16 +105,18 @@
   OutputSigType1=Digital
   OutputCue2=PowerIsOff
   OutputSigType2=Digital
-  OutputCue3=[~UNUSED~]
+  OutputCue3=IsBusy
   OutputSigType3=Digital
   OutputCue4=MuteIsOn
   OutputSigType4=Digital
   OutputCue5=MuteIsOff
   OutputSigType5=Digital
-  InputList2Cue1=ChangeInput
+  InputList2Cue1=SetVolume
   InputList2SigType1=Analog
-  InputList2Cue2=LaunchApp
+  InputList2Cue2=ChangeInput
   InputList2SigType2=Analog
+  InputList2Cue3=LaunchApp
+  InputList2SigType3=Analog
   OutputList2Cue1=VolumeValue
   OutputList2SigType1=Analog
   OutputList2Cue2=[~UNUSED~]
@@ -183,16 +185,18 @@
   OutputList2SigType33=Analog
   OutputList2Cue34=[~UNUSED~]
   OutputList2SigType34=Analog
-  OutputList2Cue35=CurrentInput
+  OutputList2Cue35=[~UNUSED~]
   OutputList2SigType35=Analog
-  OutputList2Cue36=InputNamesXsig
-  OutputList2SigType36=Serial
-  OutputList2Cue37=InputIconsXsig
+  OutputList2Cue36=CurrentInput
+  OutputList2SigType36=Analog
+  OutputList2Cue37=InputNamesXsig
   OutputList2SigType37=Serial
-  OutputList2Cue38=AppNamesXsig
+  OutputList2Cue38=InputIconsXsig
   OutputList2SigType38=Serial
-  OutputList2Cue39=AppIconsXsig
+  OutputList2Cue39=AppNamesXsig
   OutputList2SigType39=Serial
+  OutputList2Cue40=AppIconsXsig
+  OutputList2SigType40=Serial
   ParamCue1=[Reference Name]
   ParamCue2=[~UNUSED~]
   ParamSigType2=Constant
@@ -282,26 +286,30 @@
   ParamSigType44=Constant
   ParamCue45=[~UNUSED~]
   ParamSigType45=Constant
-  ParamCue46=ID
-  ParamSigType46=String
-  ParamCue47=IpAddress
+  ParamCue46=[~UNUSED~]
+  ParamSigType46=Constant
+  ParamCue47=ID
   ParamSigType47=String
-  ParamCue48=MacAddress
+  ParamCue48=IpAddress
   ParamSigType48=String
-  ParamCue49=Port
-  ParamSigType49=Constant
-  ParamCue50=VolumeRepeatTime
+  ParamCue49=MacAddress
+  ParamSigType49=String
+  ParamCue50=Port
   ParamSigType50=Constant
+  ParamCue51=VolumeRepeatTime
+  ParamSigType51=Constant
+  ParamCue52=DebugMode
+  ParamSigType52=Constant
   MinVariableInputs=39
   MaxVariableInputs=39
-  MinVariableInputsList2=2
-  MaxVariableInputsList2=2
+  MinVariableInputsList2=3
+  MaxVariableInputsList2=3
   MinVariableOutputs=5
   MaxVariableOutputs=5
-  MinVariableOutputsList2=39
-  MaxVariableOutputsList2=39
-  MinVariableParams=49
-  MaxVariableParams=49
+  MinVariableOutputsList2=40
+  MaxVariableOutputsList2=40
+  MinVariableParams=51
+  MaxVariableParams=51
   Expand=expand_separately
   Expand2=expand_separately
   ProgramTree=Logic
@@ -316,12 +324,13 @@
   CompilerParamCode5=14
   NumFixedParams=1
   Pp1=1
-  Pp46=46
   Pp47=47
   Pp48=48
   Pp49=49
   Pp50=50
-  MPp=50
+  Pp51=51
+  Pp52=52
+  MPp=52
   NVStorage=10
   ParamSigType1=String
   SmplCInputCue1=o#
@@ -339,14 +348,6 @@
   H=1
   Tp=1
   NoS=False
-[END]
-[BEGIN]
-  ObjTp=Dp
-  H=46
-  Tp=1
-  HD=False
-  NoS=False
-  VVS=0
 [END]
 [BEGIN]
   ObjTp=Dp
@@ -368,6 +369,14 @@
   ObjTp=Dp
   H=49
   Tp=1
+  HD=False
+  NoS=False
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=50
+  Tp=1
   HD=True
   DV=3000d
   Sgn=0
@@ -379,7 +388,20 @@
 [END]
 [BEGIN]
   ObjTp=Dp
-  H=50
+  H=51
+  Tp=1
+  HD=True
+  DV=10d
+  Sgn=0
+  Lng=False
+  NF=63
+  NoS=True
+  DNF=1
+  VVS=0
+[END]
+[BEGIN]
+  ObjTp=Dp
+  H=52
   Tp=1
   HD=False
   Sgn=0
