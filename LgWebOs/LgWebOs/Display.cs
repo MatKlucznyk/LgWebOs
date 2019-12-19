@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections.Generic;
 using Crestron.SimplSharp;
-using Crestron.SimplSharp.SimplSharpExtensions;
 using Crestron.SimplSharp.CrestronIO;
 using Crestron.SimplSharp.CrestronWebSocketClient;
 using Crestron.SimplSharp.CrestronSockets;
@@ -12,14 +11,17 @@ using Crestron.SimplSharp.Net;
 using Crestron.SimplSharp.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using XSigUtilityLibrary;
+using XSigUtilityLibrary.Intersystem;
 
 namespace LgWebOs
 {
     public class Display
     {
+        #region Private Variables
         private WebSocketClient _socketClient;
         private UDPServer _udpServer;
-        private CTimer WaitForConnectionTimer;
+        private CTimer PollConnectionTimer;
         private CTimer PollClientTimer;
         private InputControls _inputControls;
         private List<ExternalInput> _externalInputs;
@@ -29,9 +31,8 @@ namespace LgWebOs
         private bool _isPoweredOn;
         private string _currentInput;
         private bool _debugMode = false;
-        private bool _sentConnection;
         private bool _isBusy;
-        private int _pingCount = 0;
+        private bool _connectionSent;
         private uint _port;
         private string _id;
         private string _ipAddress;
@@ -52,14 +53,18 @@ namespace LgWebOs
             else
                 return string.Empty;
         }
+        #endregion
 
+        #region Delegates
         public delegate void Busy(ushort state);
         public delegate void PowerState(ushort state);
         public delegate void VolumeValue(ushort value);
         public delegate void VolumeMuteState(ushort state);
         public delegate void CurrentInputValue(ushort valuet);
+        public delegate void InputCount(ushort count);
         public delegate void ExternalInputNames(SimplSharpString xsig);
         public delegate void ExternalInputIcons(SimplSharpString xsig);
+        public delegate void AppCount(ushort count);
         public delegate void AppNames(SimplSharpString xsig);
         public delegate void AppIcons(SimplSharpString xsig);
 
@@ -68,13 +73,19 @@ namespace LgWebOs
         public VolumeValue onVolumeValue { get; set; }
         public VolumeMuteState onVolumeMuteState { get; set; }
         public CurrentInputValue onCurrentInputValue { get; set; }
+        public InputCount onInputCount { get; set; }
         public ExternalInputNames onExternalInputNames { get; set; }
         public ExternalInputIcons onExternalInputIcons { get; set; }
+        public AppCount onAppCount { get; set; }
         public AppNames onAppNames { get; set; }
         public AppIcons onAppIcons { get; set; }
+        #endregion
 
+        #region Public Variables
         public ushort DebugMode { get { return Convert.ToUInt16(_debugMode); } set { _debugMode = Convert.ToBoolean(value); } }
+        #endregion
 
+        #region General Methods
         public void Initialize(string id, string ipAddress, ushort port, string macAddress)
         {
             _isBusy = true;
@@ -111,13 +122,24 @@ namespace LgWebOs
             _udpServer = new UDPServer(_ipAddress, 40000, 1000);
             _udpServer.EthernetAdapterToBindTo = EthernetAdapterType.EthernetLANAdapter;
             _udpServer.EnableUDPServer();
-            WaitForConnectionTimer = new CTimer(PollConnection, this, 5000, 5000);
+            PollConnectionTimer = new CTimer(PollConnection, this, 0, 2500);
+
+            _isBusy = false;
+            if (onBusy != null)
+                onBusy(0);
         }
 
         private void Connect()
         {
             try
             {
+                if (!_isBusy)
+                {
+                    _isBusy = true;
+                    if (onBusy != null)
+                        onBusy(1);
+                }
+
                 _socketClient.ConnectAsync();
             }
             catch (Exception e)
@@ -157,8 +179,6 @@ namespace LgWebOs
                 }
 
                 _udpServer.SendData(wolPacket, wolPacket.Length);
-                _pingCount = 0;
-                WaitForConnectionTimer = new CTimer(PollConnection, this, 5000, 5000);
             }
         }
 
@@ -260,87 +280,81 @@ namespace LgWebOs
             }
         }
 
+        public void SendNotification(string value)
+        {
+            if (_socketClient.Connected)
+            {
+                SendRequest("{\"type\":\"request\",\"id\":\"sendNotification\",\"uri\":\"ssap://system.notifications/createToast\",\"payload\":{\"message\":\"" + value + "\"}}");
+            }
+        }
+        #endregion
+
+        #region Timers
+        /// <summary>
+        /// Polls connection of client. If client is not connected and is pingable, a connection attempt will be made.
+        /// </summary>
+        /// <param name="o"></param>
         private void PollConnection(object o)
         {
-            if (_pingCount >= 2 && !_sentConnection)
+
+            try
             {
-                _isBusy = false;
-                if (onBusy != null)
-                    onBusy(0);
-                _isPoweredOn = false;
-                WaitForConnectionTimer.Stop();
-                WaitForConnectionTimer.Dispose();
-            }
-            else
-            {
-                try
+                if (!_socketClient.Connected && !_connectionSent && !_isPoweredOn)
                 {
-                    /*using (HttpClient client = new HttpClient())
-                    {
-                        client.Port = Convert.ToInt16(_port);
-                        client.KeepAlive = false;
-                        client.TimeoutEnabled = true;
-                        client.Timeout = 4;
-                        client.AllowAutoRedirect = false;
-                        client.MaximumAutomaticRedirections = 200;
-
-                        HttpClientRequest request = new HttpClientRequest();
-                        request.Url.Parse(string.Format("http://{0}", _ipAddress));
-                        request.KeepAlive = false ;
-
-                        request.RequestType = Crestron.SimplSharp.Net.Http.RequestType.Get;
-
-                        HttpClientResponse response = client.Dispatch(request);
-
-                        if (response.ContentString.Contains("Hello world") && !_sentConnection)
-                        {
-                            _sentConnection = true;
-                            WaitForConnectionTimer.Stop();
-                            WaitForConnectionTimer.Dispose();
-                            Connect();
-                        }
-                    }*/
                     string response = string.Empty;
                     CrestronConsole.SendControlSystemCommand(string.Format("ping {0}", _ipAddress), ref response);
 
-                    if (!response.Contains("PING: transmit failed"))
+                    if (!response.Contains("PING: transmit failed") && !_socketClient.Connected && !_connectionSent && !_isPoweredOn)
                     {
-                        _sentConnection = true;
-                        WaitForConnectionTimer.Stop();
-                        WaitForConnectionTimer.Dispose();
+                        _connectionSent = true;
                         Connect();
                     }
                 }
-                catch (Exception e)
+            }
+            catch (Exception e)
+            {
+                if (_debugMode)
                 {
-                    if (_debugMode)
-                    {
-                        ErrorLog.Exception(string.Format("LgWebOs.Display.TestConnection ID={0} Exeption Occured", _id), e);
-                    }
+                    ErrorLog.Exception(string.Format("LgWebOs.Display.TestConnection ID={0} Exeption Occured", _id), e);
                 }
-
-                _pingCount++;
             }
         }
 
-        private int SocketConnectionCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode)
+        /// <summary>
+        /// Polls client when connection is active. Will initiate the receive async method. If client is disconnected, this will clean resources.
+        /// </summary>
+        /// <param name="o"></param>
+        private void PollClient(object o)
         {
-            if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
+            try
             {
-                _isPoweredOn = true;
-
-                if (onPowerState != null)
-                    onPowerState(1);
-
-                CTimer WaitForDisplayServerTimer = new CTimer(DisplayServerReady, 2500);
+                if (_socketClient.Connected)
+                {
+                    var value = _socketClient.ReceiveAsync();
+                }
+                else
+                {
+                    _inputControls.PollConnectionTimer.Stop();
+                    _inputControls.PollConnectionTimer.Dispose();
+                    PollClientTimer.Stop();
+                    PollClientTimer.Dispose();
+                    _inputControls._socketClient.DisconnectAsync(this);
+                    _socketClient.DisconnectAsync(this);
+                }
             }
-            else if (resultCode != WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
+            catch (SocketException e)
             {
-                _sentConnection = false;
+                if (_debugMode)
+                {
+                    ErrorLog.Exception(string.Format("LgWebOs.Display.CheckForData ID={0} SocketExeption Occured", _id), e);
+                }
             }
-            return 0;
         }
 
+        /// <summary>
+        /// Waits 2.5 seconds on connection to send required handshake.
+        /// </summary>
+        /// <param name="o"></param>
         private void DisplayServerReady(object o)
         {
             PollClientTimer = new CTimer(PollClient, this, 0, 100);
@@ -358,12 +372,35 @@ namespace LgWebOs
             if (onBusy != null)
                 onBusy(0);
         }
+        #endregion
+
+        #region Client Asyn Callbacks
+        private int SocketConnectionCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode)
+        {
+            if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
+            {
+                PollConnectionTimer.Stop();
+                _isPoweredOn = true;
+
+                if (onPowerState != null)
+                    onPowerState(1);
+
+                CTimer WaitForDisplayServerTimer = new CTimer(DisplayServerReady, 500);
+            }
+            else if (resultCode != WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
+            {
+                _isBusy = false;
+                if (onBusy != null)
+                    onBusy(0);
+            }
+
+            return 0;
+        }
 
         private int SocketDisconnectCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode, object obj)
         {
             if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
             {
-                _sentConnection = false;
                 _isPoweredOn = false;
 
                 if (onPowerState != null)
@@ -372,6 +409,10 @@ namespace LgWebOs
                 _isBusy = false;
                 if (onBusy != null)
                     onBusy(0);
+
+                _connectionSent = false;
+
+                PollConnectionTimer.Reset(2500, 2500);
             }
 
             return 0;
@@ -469,19 +510,28 @@ namespace LgWebOs
                                     foreach (var input in _externalInputs)
                                     {
                                         inputNames.Add(input.label);
-                                        inputIcons.Add(input.icon.Replace("http:", string.Format("http://{0}", _ipAddress)));
+                                        inputIcons.Add(input.icon.Replace("http:", string.Format("http://{0}:{1}", _ipAddress, _port)));
                                     }
+
+                                    if (onInputCount != null)
+                                        onInputCount(Convert.ToUInt16(_externalInputs.Count));
 
                                     if (onExternalInputNames != null)
                                     {
-                                        var encodedBytes = XSig.GetBytes(1, inputNames.ToArray());
-                                        onExternalInputNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        foreach (var inputName in inputNames)
+                                        {
+                                            var encodedBytes = XSigHelpers.GetBytes(inputNames.IndexOf(inputName) + 1, inputName);
+                                            onExternalInputNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        }
                                     }
 
                                     if (onExternalInputIcons != null)
                                     {
-                                        var encodedBytes = XSig.GetBytes(1, inputIcons.ToArray());
-                                        onExternalInputIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        foreach (var inputIcon in inputIcons)
+                                        {
+                                            var encodedBytes = XSigHelpers.GetBytes(inputIcons.IndexOf(inputIcon) + 1, inputIcon);
+                                            onExternalInputIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        }
                                     }
                                 }
                                 else if (CleanJson(response["id"].ToString()) == "getAllApps")
@@ -494,19 +544,28 @@ namespace LgWebOs
                                     foreach (var input in _apps)
                                     {
                                         appNames.Add(input.title);
-                                        appIcons.Add(input.icon.Replace("http:", string.Format("http://{0}", _ipAddress)));
+                                        appIcons.Add(input.icon.Replace("http:", string.Format("http://{0}:{1}", _ipAddress, _port)));
                                     }
+
+                                    if (onAppCount != null)
+                                        onAppCount(Convert.ToUInt16(_apps.Count));
 
                                     if (onAppNames != null)
                                     {
-                                        var encodedBytes = XSig.GetBytes(1, appNames.ToArray());
-                                        onAppNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        foreach (var appName in appNames)
+                                        {
+                                            var encodedBytes = XSigHelpers.GetBytes(appNames.IndexOf(appName) + 1, appName);
+                                            onAppNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        }
                                     }
 
                                     if (onAppIcons != null)
                                     {
-                                        var encodedBytes = XSig.GetBytes(1, appIcons.ToArray());
-                                        onAppIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        foreach (var appIcon in appIcons)
+                                        {
+                                            var encodedBytes = XSigHelpers.GetBytes(appIcons.IndexOf(appIcon) + 1, appIcon);
+                                            onAppIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                        }
                                     }
                                 }
                                 else if (CleanJson(response["id"].ToString()) == "setVolume")
@@ -582,34 +641,9 @@ namespace LgWebOs
                 return 0;
             }
         }
+        #endregion
 
-        private void PollClient(object o)
-        {
-            try
-            {
-                if (_socketClient.Connected)
-                {
-                    var value = _socketClient.ReceiveAsync();
-                }
-                else
-                {
-                    _inputControls.PollConnectionTimer.Stop();
-                    _inputControls.PollConnectionTimer.Dispose();
-                    PollClientTimer.Stop();
-                    PollClientTimer.Dispose();
-                    _inputControls._socketClient.DisconnectAsync(this);
-                    _socketClient.DisconnectAsync(this);
-                }
-            }
-            catch (SocketException e)
-            {
-                if (_debugMode)
-                {
-                    ErrorLog.Exception(string.Format("LgWebOs.Display.CheckForData ID={0} SocketExeption Occured", _id), e);
-                }
-            }
-        }
-
+        #region Method Helpers
         private void SendRequest(string request)
         {
             if (_socketClient.Connected)
@@ -642,5 +676,6 @@ namespace LgWebOs
             double rounded = Math.Round(levelScaled);
             return Convert.ToInt32(rounded);
         }
+        #endregion
     }
 }

@@ -117,6 +117,10 @@
   InputList2SigType2=Analog
   InputList2Cue3=LaunchApp
   InputList2SigType3=Analog
+  InputList2Cue4=[~UNUSED~]
+  InputList2SigType4=Serial
+  InputList2Cue5=SendNotification
+  InputList2SigType5=Serial
   OutputList2Cue1=VolumeValue
   OutputList2SigType1=Analog
   OutputList2Cue2=[~UNUSED~]
@@ -181,9 +185,9 @@
   OutputList2SigType31=Analog
   OutputList2Cue32=[~UNUSED~]
   OutputList2SigType32=Analog
-  OutputList2Cue33=[~UNUSED~]
+  OutputList2Cue33=TotalInputs
   OutputList2SigType33=Analog
-  OutputList2Cue34=[~UNUSED~]
+  OutputList2Cue34=TotalApps
   OutputList2SigType34=Analog
   OutputList2Cue35=[~UNUSED~]
   OutputList2SigType35=Analog
@@ -302,8 +306,8 @@
   ParamSigType52=Constant
   MinVariableInputs=39
   MaxVariableInputs=39
-  MinVariableInputsList2=3
-  MaxVariableInputsList2=3
+  MinVariableInputsList2=5
+  MaxVariableInputsList2=5
   MinVariableOutputs=5
   MaxVariableOutputs=5
   MinVariableOutputsList2=40

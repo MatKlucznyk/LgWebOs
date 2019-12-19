@@ -12,10 +12,11 @@ Digital_Input _skip_, KeyUp, KeyDown, KeyLeft, KeyRight, KeyHome, KeyBack, KeySe
 Digital_Input _skip_, Key0, Key1, Key2, Key3, Key4, Key5, Key6, Key7, Key8, Key9;
 Digital_Input _skip_, GetInputs, GetApps;
 Analog_Input SetVolume, ChangeInput, LaunchApp;
+String_Input _skip_, SendNotification[100];
 
 Digital_Output PowerIsOn, PowerIsOff, IsBusy, MuteIsOn, MuteIsOff;
 Analog_Output VolumeValue;
-Analog_Output _skip_, _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, CurrentInput;
+Analog_Output _skip_, _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,  TotalInputs, TotalApps, _skip_, CurrentInput;
 String_Output InputNamesXsig, InputIconsXsig, AppNamesXsig, AppIconsXsig;
 
 Display webOsDisplay;
@@ -248,6 +249,11 @@ Change LaunchApp
     webOsDisplay.LaunchApp(LaunchApp);
 }
 
+Change SendNotification
+{
+    webOsDisplay.SendNotification(SendNotification);
+}
+
 callback function newBusy(integer state)
 {
     IsBusy = state;
@@ -291,6 +297,11 @@ callback function newCurrentInputValue(integer value)
     CurrentInput = value + 1;
 }
 
+callback function newInputCount(integer count)
+{
+    TotalInputs = count;
+}
+
 callback function newExternalInputNames(string xsig)
 {
     InputNamesXsig = xsig;
@@ -299,6 +310,11 @@ callback function newExternalInputNames(string xsig)
 callback function newExternalInputIcons(string xsig)
 {
     InputIconsXsig = xsig;
+}
+
+callback function newAppCount(integer count)
+{
+    TotalApps = count;
 }
 
 callback function newAppNames(string xsig)
@@ -322,8 +338,10 @@ Function Main()
     RegisterDelegate(webOsDisplay, onVolumeValue, newVolumeValue);
     RegisterDelegate(webOsDisplay, onVolumeMuteState, newVolumeMuteState);
     RegisterDelegate(webOsDisplay, onCurrentInputValue, newCurrentInputValue);
+    RegisterDelegate(webOsDisplay, onInputCount, newInputCount);
     RegisterDelegate(webOsDisplay, onExternalInputNames, newExternalInputNames);
     RegisterDelegate(webOsDisplay, onExternalInputIcons, newExternalInputIcons);
+    RegisterDelegate(webOsDisplay, onAppCount, newAppCount);
     RegisterDelegate(webOsDisplay, onAppIcons, newAppIcons);
     RegisterDelegate(webOsDisplay, onAppNames, newAppNames);
 
