@@ -1,17 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Globalization;
-using System.Collections.Generic;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
-using Crestron.SimplSharp.CrestronWebSocketClient;
 using Crestron.SimplSharp.CrestronSockets;
-using Crestron.SimplSharp.Net;
-using Crestron.SimplSharp.Net.Http;
+using Crestron.SimplSharp.CrestronWebSocketClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using XSigUtilityLibrary;
 using XSigUtilityLibrary.Intersystem;
 
 namespace LgWebOs
@@ -191,6 +188,8 @@ namespace LgWebOs
                     onBusy(1);
 
                 SendRequest("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
+
+                CTimer waitForPowerOff = new CTimer(powerOffWait, 1000);
             }
         }
 
@@ -243,6 +242,14 @@ namespace LgWebOs
                 {
                     _inputControls.SendKey(name);
                 }
+                else
+                {
+                    SendRequest("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+                }
+            }
+            else if (_isPoweredOn)
+            {
+                SendRequest("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
             }
         }
 
@@ -372,6 +379,19 @@ namespace LgWebOs
             if (onBusy != null)
                 onBusy(0);
         }
+
+        private void powerOffWait(object o)
+        {
+            if (_isPoweredOn || _socketClient.Connected)
+            {
+                _isPoweredOn = false;
+                if (onPowerState != null)
+                {
+                    onPowerState(0);
+                }
+                _socketClient.DisconnectAsync(this);
+            }
+        }
         #endregion
 
         #region Client Asyn Callbacks
@@ -386,6 +406,10 @@ namespace LgWebOs
                     onPowerState(1);
 
                 CTimer WaitForDisplayServerTimer = new CTimer(DisplayServerReady, 500);
+            }
+            else if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_INVALID_HANDLE)
+            {
+                _socketClient.DisconnectAsync(this);
             }
             else if (resultCode != WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
             {
@@ -422,6 +446,10 @@ namespace LgWebOs
         {
             if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
             {
+            }
+            else if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_INVALID_HANDLE)
+            {
+                _socketClient.DisconnectAsync(this);
             }
 
             return 0;
@@ -629,6 +657,10 @@ namespace LgWebOs
                             }
                         }
                     }
+                }
+                else if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_INVALID_HANDLE)
+                {
+                    _socketClient.DisconnectAsync(this);
                 }
                 return 0;
             }

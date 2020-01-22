@@ -1,6 +1,6 @@
 #SYMBOL_NAME "LG WebOS Display"
 
-#INCLUDEPATH "D:\\Programming\\Crestron Modules\\Mat\\SIMPLSharp Projects\\LgWebOs\\LgWebOs\\LgWebOs\\bin\\Debug"
+#INCLUDEPATH "D:\\Programming\\OneDrive - Global USS\\Crestron Modules\\Mat\\SIMPLSharp Projects\\LgWebOs\\LgWebOs\\LgWebOs\\bin\\Debug"
 #USER_SIMPLSHARP_LIBRARY "LgWebOs"
 
 #DEFAULT_VOLATILE
