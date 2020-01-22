@@ -15,11 +15,11 @@ Volume Up  Confirmation - {"type":"response","id":"volumeDown","payload":{"retur
 
 Volume Mute - {"type":"request","id":"volumeMute","uri":"ssap://audio/setMute", "payload":{"mute": false}}
 
-Send Notification-{"type":"request","sendNotification","uri":"ssap://system.notifications/createToast","payload":{"message":"Hello World!"}}
+Send Notification-{"type":"request","id":"sendNotification","uri":"ssap://system.notifications/createToast","payload":{"message":"Hello World!"}}
 
 Change Input - {"type":"request","id":"changeInput_{0}","uri":"tv/switchInput", "payload":{"inputId": "AV_1"}}
 
-{"type":"request","id":"launchApp","uri":"ssap://com.webos.applicationManager/launch", "payload": {"id": "netflix"}}
+{"type":"request","id":"launchApp","uri":"ssap://com.webos.applicationManager/launch", "payload": {"id": "amazon"}}
 
 
 Get All Inputs - {"type":"request","id":"getExternalInputs","uri":"ssap://tv/getExternalInputList"}

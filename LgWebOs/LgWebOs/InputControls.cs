@@ -2,7 +2,6 @@
 using System.Text;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronWebSocketClient;
-using Crestron.SimplSharp.CrestronSockets;
 
 namespace LgWebOs
 {

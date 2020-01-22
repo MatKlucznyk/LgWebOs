@@ -1,8 +1,46 @@
 namespace LgWebOs;
         // class declarations
-         class Display;
-         class App;
          class ExternalInput;
+         class App;
+         class Display;
+     class ExternalInput 
+    {
+        // class delegates
+
+        // class events
+
+        // class functions
+        STRING_FUNCTION ToString ();
+        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
+
+        // class variables
+        INTEGER __class_id__;
+
+        // class properties
+        STRING id[];
+        STRING label[];
+        STRING icon[];
+    };
+
+     class App 
+    {
+        // class delegates
+
+        // class events
+
+        // class functions
+        STRING_FUNCTION ToString ();
+        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
+
+        // class variables
+        INTEGER __class_id__;
+
+        // class properties
+        STRING id[];
+        STRING title[];
+        STRING icon[];
+    };
+
      class Display 
     {
         // class delegates
@@ -53,43 +91,5 @@ namespace LgWebOs;
         DelegateProperty AppNames onAppNames;
         DelegateProperty AppIcons onAppIcons;
         INTEGER DebugMode;
-    };
-
-     class App 
-    {
-        // class delegates
-
-        // class events
-
-        // class functions
-        STRING_FUNCTION ToString ();
-        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
-
-        // class variables
-        INTEGER __class_id__;
-
-        // class properties
-        STRING id[];
-        STRING title[];
-        STRING icon[];
-    };
-
-     class ExternalInput 
-    {
-        // class delegates
-
-        // class events
-
-        // class functions
-        STRING_FUNCTION ToString ();
-        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
-
-        // class variables
-        INTEGER __class_id__;
-
-        // class properties
-        STRING id[];
-        STRING label[];
-        STRING icon[];
     };
 
