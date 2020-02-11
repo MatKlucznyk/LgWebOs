@@ -2,42 +2,48 @@
 using System.Text;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronWebSocketClient;
+using WS_Client;
 
 namespace LgWebOs
 {
     internal class InputControls
     {
-        internal WebSocketClient _socketClient;
-        internal CTimer PollConnectionTimer;
+        //internal WebSocketClient _socketClient;
+        //internal CTimer PollConnectionTimer;
+        internal WsClient _socketClient;
 
-        internal InputControls(string ipAddress, uint port, string path)
+        internal InputControls(string ipAddress, ushort port, string path)
         {
-            _socketClient = new WebSocketClient();
+            _socketClient = new WsClient();
 
             path = path.Replace("ws:", string.Empty);
-            _socketClient.Port = port;
+            /*_socketClient.Port = port;
             _socketClient.URL = string.Format("ws://{0}{1}", ipAddress, path);
             _socketClient.KeepAlive = true;
 
             _socketClient.ConnectionCallBack = ConnectionCallBack;
             _socketClient.SendCallBack = SendCallBack;
             _socketClient.ReceiveCallBack = ReceiveCallBack;
-            _socketClient.ConnectAsync();
+            _socketClient.ConnectAsync();*/
+
+            _socketClient.AutoReconnect = 0;
+            _socketClient.ID = ipAddress;
+            _socketClient.Connect(ipAddress + path, port);
         }
 
         internal void SendKey(string key)
         {
             key = string.Format("type:button\nname:{0}\n\n", key.ToUpper());
 
-            if (_socketClient.Connected)
+            if (_socketClient.IsConnected == 1)
             {
                 var data = Encoding.ASCII.GetBytes(key);
 
-                _socketClient.SendAsync(data, Convert.ToUInt16(data.Length), WebSocketClient.WEBSOCKET_PACKET_TYPES.LWS_WS_OPCODE_07__TEXT_FRAME);
+                _socketClient.SendData(key);
             }
         }
 
-        private int ConnectionCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode)
+        /*private int ConnectionCallBack(WebSocketClient.WEBSOCKET_RESULT_CODES resultCode)
         {
             if (resultCode == WebSocketClient.WEBSOCKET_RESULT_CODES.WEBSOCKET_CLIENT_SUCCESS)
             {
@@ -73,6 +79,6 @@ namespace LgWebOs
             {
                 _socketClient.Dispose();
             }
-        }
+        }*/
     }
 }

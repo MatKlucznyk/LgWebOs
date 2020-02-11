@@ -23,3 +23,4 @@ D:\Programming\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\Lg
 D:\Programming\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\ResolveAssemblyReference.cache
 D:\Programming\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\LgWebOs.dll
 D:\Programming\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\LgWebOs.pdb
+D:\Programming\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\WS_Client.dll
