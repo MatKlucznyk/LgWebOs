@@ -156,7 +156,7 @@ namespace LgWebOs
                             }
                             else if (CleanJson(response["id"].ToString()) == "register_1")
                             {
-                                _mainClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+                                CTimer waitToGetInfo = new CTimer(DisplayGetInfo, 2500);
                             }
                         }
                     }
@@ -168,10 +168,7 @@ namespace LgWebOs
                             {
                                 if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
                                 {
-                                    _isPoweredOn = false;
-
-                                    if (onPowerState != null)
-                                        onPowerState(0);
+                                    _mainClient.TemporaryDisconnect();
                                 }
                             }
                             else if (CleanJson(response["id"].ToString()) == "getInputSocket")
@@ -549,6 +546,11 @@ namespace LgWebOs
             _isBusy = false;
             if (onBusy != null)
                 onBusy(0);
+        }
+
+        private void DisplayGetInfo(object o)
+        {
+            _mainClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
         }
         #endregion
 
