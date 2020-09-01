@@ -6,11 +6,10 @@ using System.Text.RegularExpressions;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronIO;
 using Crestron.SimplSharp.CrestronSockets;
-using Crestron.SimplSharp.CrestronWebSocketClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using XSigUtilityLibrary.Intersystem;
 using WS_Client;
+using XSigUtilityLibrary.Intersystem;
 
 namespace LgWebOs
 {
@@ -133,7 +132,6 @@ namespace LgWebOs
             {
                 JObject response = JObject.Parse(e.Data);
 
-
                 if (response["type"] != null)
                 {
                     if (CleanJson(response["type"].ToString()) == "registered")
@@ -168,12 +166,12 @@ namespace LgWebOs
                             {
                                 if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
                                 {
-                                    _mainClient.TemporaryDisconnect();
+                                    _mainClient.Disconnect();
                                 }
                             }
                             else if (CleanJson(response["id"].ToString()) == "getInputSocket")
                             {
-                                _inputControls = new InputControls(_ipAddress, _port, CleanJson(response["payload"]["socketPath"].ToString()));
+                                _inputControls = new InputControls(_ipAddress, _port, CleanJson(response["payload"]["socketPath"].ToString()), _id);
                                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
                             }
                             else if (CleanJson(response["id"].ToString()).Contains("changeInput_"))
@@ -345,6 +343,11 @@ namespace LgWebOs
             }
             else
             {
+                if (_inputControls != null)
+                {
+                    _inputControls._socketClient.Disconnect();
+                }
+
                 _isBusy = false;
                 if (onBusy != null)
                     onBusy(0);
@@ -367,8 +370,7 @@ namespace LgWebOs
                         onBusy(1);
                 }
 
-                _mainClient.Connect(_ipAddress, _port);
-                //_socketClient.ConnectAsync();
+                _mainClient.Connect("ws://" + _ipAddress, _port, string.Empty);
             }
             catch (Exception e)
             {
@@ -419,8 +421,6 @@ namespace LgWebOs
                     onBusy(1);
 
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
-
-                //CTimer waitForPowerOff = new CTimer(powerOffWait, 1000);
             }
         }
 
@@ -503,7 +503,7 @@ namespace LgWebOs
 
         public void LaunchApp(ushort index)
         {
-            if (_mainClient.IsConnected == 1)
+            if (_mainClient.IsConnected == 1 && _apps != null)
             {
                 if (_apps.Count >= index)
                     _mainClient.SendData("{\"type\":\"request\",\"id\":\"launchApp\",\"uri\":\"ssap://com.webos.applicationManager/launch\", \"payload\": {\"id\": \"" + _apps[index - 1].id + "\"}}");
