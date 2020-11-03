@@ -16,7 +16,8 @@ namespace LgWebOs
     public class Display
     {
         #region Private Variables
-        private WsClient _mainClient;
+        //private WsClient _mainClient;
+        private AltWsClient _testClient;
         private UDPServer _udpServer;
         private InputControls _inputControls;
         private List<ExternalInput> _externalInputs;
@@ -102,9 +103,11 @@ namespace LgWebOs
                 }
             }
 
-            _mainClient = new WsClient();
+            //_mainClient = new WsClient();
 
-            _mainClient.ID = "LgWebOs - " + _id;
+            _testClient = new AltWsClient();
+
+            /*_mainClient.ID = "LgWebOs - " + _id;
             _mainClient.AutoReconnect = 1;
 
             if (_debugMode)
@@ -113,7 +116,13 @@ namespace LgWebOs
             }
 
             _mainClient.ConnectionStatusChange += new EventHandler<ConnectionEventArgs>(_mainClient_ConnectionStatusChange);
-            _mainClient.ReceiveDataChange += new EventHandler<ReceiveDataEventArgs>(_mainClient_ReceiveDataChange);
+            _mainClient.ReceiveDataChange += new EventHandler<ReceiveDataEventArgs>(_mainClient_ReceiveDataChange);*/
+
+            _testClient.OnConnected = Connected;
+            _testClient.OnDisconnected = Disconnected;
+            _testClient.OnDataReceived = ReceivedData;
+
+            _testClient.Connect(ipAddress, port, "");
 
             _udpServer = new UDPServer(_ipAddress, 40000, 1000);
             _udpServer.EthernetAdapterToBindTo = EthernetAdapterType.EthernetLANAdapter;
@@ -123,10 +132,232 @@ namespace LgWebOs
             if (onBusy != null)
                 onBusy(0);
 
-            Connect();
+            //Connect();
         }
 
-        void _mainClient_ReceiveDataChange(object sender, ReceiveDataEventArgs e)
+        private void Connected()
+        {
+        }
+
+        private void Disconnected()
+        {
+        }
+
+        private void ReceivedData(SimplSharpString data)
+        {
+            try
+            {
+                JObject response = JObject.Parse(data.ToString());
+
+                if (response["type"] != null)
+                {
+                    if (CleanJson(response["type"].ToString()) == "registered")
+                    {
+                        if (response["id"] != null)
+                        {
+                            if (CleanJson(response["id"].ToString()) == "register_0")
+                            {
+                                if (response["payload"]["client-key"] != null)
+                                {
+                                    _clientKey = CleanJson(response["payload"]["client-key"].ToString());
+
+                                    using (StreamWriter writer = new StreamWriter(File.Create(_keyFilePath)))
+                                    {
+                                        writer.WriteLine(_clientKey);
+                                    }
+
+                                    //_mainClient.SendData(_verifyClientKey());
+
+                                    _testClient.SendData(_verifyClientKey());
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "register_1")
+                            {
+                                CTimer waitToGetInfo = new CTimer(DisplayGetInfo, 2500);
+                            }
+                        }
+                    }
+                    else if (CleanJson(response["type"].ToString()) == "response")
+                    {
+                        if (response["id"] != null)
+                        {
+                            if (CleanJson(response["id"].ToString()) == "powerOff" && response["payload"] != null)
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    //_mainClient.Disconnect();
+
+                                    _testClient.Disconnect();
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "getInputSocket")
+                            {
+                                _inputControls = new InputControls(_ipAddress, _port, CleanJson(response["payload"]["socketPath"].ToString()), _id);
+
+
+                                //_mainClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+
+                                _testClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                            }
+                            else if (CleanJson(response["id"].ToString()).Contains("changeInput_"))
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    _currentInput = CleanJson(response["id"].ToString()).Replace("changeInput_", string.Empty);
+
+                                    if (onCurrentInputValue != null)
+                                    {
+                                        ExternalInput input = _externalInputs.Find(x => x.id == _currentInput);
+                                        onCurrentInputValue(Convert.ToUInt16(_externalInputs.IndexOf(input)));
+                                    }
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "getExternalInputs")
+                            {
+                                _externalInputs = JsonConvert.DeserializeObject<List<ExternalInput>>(response["payload"]["devices"].ToString());
+
+                                List<string> inputNames = new List<string>();
+                                List<string> inputIcons = new List<string>();
+
+                                foreach (var input in _externalInputs)
+                                {
+                                    inputNames.Add(input.label);
+                                    inputIcons.Add(input.icon.Replace("http:", string.Format("http://{0}:{1}", _ipAddress, _port)));
+                                }
+
+                                if (onInputCount != null)
+                                    onInputCount(Convert.ToUInt16(_externalInputs.Count));
+
+                                if (onExternalInputNames != null)
+                                {
+                                    foreach (var inputName in inputNames)
+                                    {
+                                        var encodedBytes = XSigHelpers.GetBytes(inputNames.IndexOf(inputName) + 1, inputName);
+                                        onExternalInputNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+                                }
+
+                                if (onExternalInputIcons != null)
+                                {
+                                    foreach (var inputIcon in inputIcons)
+                                    {
+                                        var encodedBytes = XSigHelpers.GetBytes(inputIcons.IndexOf(inputIcon) + 1, inputIcon);
+                                        onExternalInputIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "getAllApps")
+                            {
+                                _apps = JsonConvert.DeserializeObject<List<App>>(response["payload"]["launchPoints"].ToString());
+
+                                List<string> appNames = new List<string>();
+                                List<string> appIcons = new List<string>();
+
+                                foreach (var input in _apps)
+                                {
+                                    appNames.Add(input.title);
+                                    appIcons.Add(input.icon.Replace("http:", string.Format("http://{0}:{1}", _ipAddress, _port)));
+                                }
+
+                                if (onAppCount != null)
+                                    onAppCount(Convert.ToUInt16(_apps.Count));
+
+                                if (onAppNames != null)
+                                {
+                                    foreach (var appName in appNames)
+                                    {
+                                        var encodedBytes = XSigHelpers.GetBytes(appNames.IndexOf(appName) + 1, appName);
+                                        onAppNames(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+                                }
+
+                                if (onAppIcons != null)
+                                {
+                                    foreach (var appIcon in appIcons)
+                                    {
+                                        var encodedBytes = XSigHelpers.GetBytes(appIcons.IndexOf(appIcon) + 1, appIcon);
+                                        onAppIcons(Encoding.GetEncoding(28591).GetString(encodedBytes, 0, encodedBytes.Length));
+                                    }
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "setVolume")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    //_mainClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+
+                                    _testClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "volumeUp")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    //_mainClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+
+                                    _testClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "volumeDown")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    //_mainClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+
+                                    _testClient.SendData("{\"type\":\"request\",\"id\":\"getVolume\",\"uri\":\"ssap://audio/getVolume\"}");
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "getVolume")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    var value = ScaleUp(Convert.ToInt16(CleanJson(response["payload"]["volume"].ToString())));
+
+                                    if (onVolumeValue != null)
+                                        onVolumeValue(Convert.ToUInt16(value));
+                                    if (onVolumeMuteState != null)
+                                    {
+                                        if (CleanJson(response["payload"]["muted"].ToString()) == "true")
+                                        {
+                                            onVolumeMuteState(1);
+                                        }
+                                        else if (CleanJson(response["payload"]["muted"].ToString()) == "false")
+                                        {
+                                            onVolumeMuteState(0);
+                                        }
+                                    }
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "volumeMuteOn")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    if (onVolumeMuteState != null)
+                                        onVolumeMuteState(1);
+                                }
+                            }
+                            else if (CleanJson(response["id"].ToString()) == "volumeMuteOff")
+                            {
+                                if (CleanJson(response["payload"]["returnValue"].ToString()) == "true")
+                                {
+                                    if (onVolumeMuteState != null)
+                                        onVolumeMuteState(0);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                if (_debugMode)
+                {
+                    ErrorLog.Exception(string.Format("LgWebOs.Display._mainClient_ReceiveDataChange ID={0} Exeption Occured", _id), ex);
+                }
+            }
+        }
+
+        /*void _mainClient_ReceiveDataChange(object sender, ReceiveDataEventArgs e)
         {
             try
             {
@@ -410,7 +641,7 @@ namespace LgWebOs
 
                 _udpServer.SendData(wolPacket, wolPacket.Length);
             }
-        }
+        }*/
 
         public void PowerOff()
         {
@@ -420,7 +651,9 @@ namespace LgWebOs
                 if (onBusy != null)
                     onBusy(1);
 
-                _mainClient.SendData("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
+                //_mainClient.SendData("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
+
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
             }
         }
 
@@ -428,31 +661,46 @@ namespace LgWebOs
         {
             var volume = ScaleDown(value);
 
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"setVolume\",\"uri\":\"ssap://audio/setVolume\",\"payload\":{\"volume\":" + volume + "}}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"setVolume\",\"uri\":\"ssap://audio/setVolume\",\"payload\":{\"volume\":" + volume + "}}");
             }
         }
 
         public void IncrementVolume()
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"volumeUp\",\"uri\":\"ssap://audio/volumeUp\"}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"volumeUp\",\"uri\":\"ssap://audio/volumeUp\"}");
             }
         }
 
         public void DecrementVolume()
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"volumeDown\",\"uri\":\"ssap://audio/volumeDown\"}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"volumeDown\",\"uri\":\"ssap://audio/volumeDown\"}");
             }
         }
 
         public void SetMute(ushort value)
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 if (value == 1)
                 {
@@ -462,12 +710,24 @@ namespace LgWebOs
                 {
                     _mainClient.SendData("{\"type\":\"request\",\"id\":\"volumeMuteOff\",\"uri\":\"ssap://audio/setMute\", \"payload\":{\"mute\": false}}");
                 }
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                if (value == 1)
+                {
+                    _testClient.SendData("{\"type\":\"request\",\"id\":\"volumeMuteOn\",\"uri\":\"ssap://audio/setMute\", \"payload\":{\"mute\": true}}");
+                }
+                else
+                {
+                    _testClient.SendData("{\"type\":\"request\",\"id\":\"volumeMuteOff\",\"uri\":\"ssap://audio/setMute\", \"payload\":{\"mute\": false}}");
+                }
             }
         }
 
         public void SendKey(string name)
         {
-            if (_isPoweredOn && _inputControls != null)
+            /*if (_isPoweredOn && _inputControls != null)
             {
                 if (_inputControls._socketClient.IsConnected == 1)
                 {
@@ -481,48 +741,91 @@ namespace LgWebOs
             else if (_isPoweredOn)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+            }*/
+
+            if (_isPoweredOn && _inputControls != null)
+            {
+                if (_inputControls._socketTestClient.IsConnected)
+                {
+                    _inputControls.SendKey(name);
+                }
+                else
+                {
+                    _testClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+                }
+            }
+            else if (_isPoweredOn)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
             }
         }
 
         public void ChangeInput(ushort input)
         {
-            if (_mainClient.IsConnected == 1 && _externalInputs != null)
+            /*if (_mainClient.IsConnected == 1 && _externalInputs != null)
             {
                 if(_externalInputs.Count >= input)
                     _mainClient.SendData("{\"type\":\"request\",\"id\":\"changeInput_" + _externalInputs[input - 1].id + "\",\"uri\":\"ssap://tv/switchInput\", \"payload\":{\"inputId\": \"" + _externalInputs[input - 1].id + "\"}}");
+            }*/
+
+            if (_testClient.IsConnected && _externalInputs != null)
+            {
+                if (_externalInputs.Count >= input)
+                    _testClient.SendData("{\"type\":\"request\",\"id\":\"changeInput_" + _externalInputs[input - 1].id + "\",\"uri\":\"ssap://tv/switchInput\", \"payload\":{\"inputId\": \"" + _externalInputs[input - 1].id + "\"}}");
             }
         }
 
         public void GetInputs()
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"getExternalInputs\",\"uri\":\"ssap://tv/getExternalInputList\"}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"getExternalInputs\",\"uri\":\"ssap://tv/getExternalInputList\"}");
             }
         }
 
         public void LaunchApp(ushort index)
         {
-            if (_mainClient.IsConnected == 1 && _apps != null)
+            /*if (_mainClient.IsConnected == 1 && _apps != null)
             {
                 if (_apps.Count >= index)
                     _mainClient.SendData("{\"type\":\"request\",\"id\":\"launchApp\",\"uri\":\"ssap://com.webos.applicationManager/launch\", \"payload\": {\"id\": \"" + _apps[index - 1].id + "\"}}");
+            }*/
+
+            if (_testClient.IsConnected && _apps != null)
+            {
+                if (_apps.Count >= index)
+                    _testClient.SendData("{\"type\":\"request\",\"id\":\"launchApp\",\"uri\":\"ssap://com.webos.applicationManager/launch\", \"payload\": {\"id\": \"" + _apps[index - 1].id + "\"}}");
             }
         }
 
         public void GetApps()
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"getAllApps\",\"uri\":\"ssap://com.webos.applicationManager/listLaunchPoints\"}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"getAllApps\",\"uri\":\"ssap://com.webos.applicationManager/listLaunchPoints\"}");
             }
         }
 
         public void SendNotification(string value)
         {
-            if (_mainClient.IsConnected == 1)
+            /*if (_mainClient.IsConnected == 1)
             {
                 _mainClient.SendData("{\"type\":\"request\",\"id\":\"sendNotification\",\"uri\":\"ssap://system.notifications/createToast\",\"payload\":{\"message\":\"" + value + "\"}}");
+            }*/
+
+            if (_testClient.IsConnected)
+            {
+                _testClient.SendData("{\"type\":\"request\",\"id\":\"sendNotification\",\"uri\":\"ssap://system.notifications/createToast\",\"payload\":{\"message\":\"" + value + "\"}}");
             }
         }
         #endregion
@@ -534,13 +837,22 @@ namespace LgWebOs
         /// <param name="o"></param>
         private void DisplayServerReady(object o)
         {
-            if (_clientKey == null)
+            /*if (_clientKey == null)
             {
                 _mainClient.SendData(_getClientKey());
             }
             else
             {
                 _mainClient.SendData(_verifyClientKey());
+            }*/
+
+            if (_clientKey == null)
+            {
+                _testClient.SendData(_getClientKey());
+            }
+            else
+            {
+                _testClient.SendData(_verifyClientKey());
             }
 
             _isBusy = false;
@@ -550,7 +862,9 @@ namespace LgWebOs
 
         private void DisplayGetInfo(object o)
         {
-            _mainClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+            //_mainClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
+
+            _testClient.SendData("{\"type\":\"request\",\"id\":\"getInputSocket\",\"uri\":\"ssap://com.webos.service.networkinput/getPointerInputSocket\"}");
         }
         #endregion
 
