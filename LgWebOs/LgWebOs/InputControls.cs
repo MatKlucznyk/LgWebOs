@@ -1,32 +1,46 @@
-﻿using System.Text;
-using WS_Client;
+﻿using System;
+using System.Text;
+using Guss.Communications.Sockets;
+using Guss.ModuleFramework.Logging;
 
 namespace LgWebOs
 {
     internal class InputControls
     {
-        internal WsClient _socketClient;
+        private bool _disposed;
+        internal WebSocketClient _socketClient;
 
-        internal InputControls(string ipAddress, ushort port, string path, string id)
+        internal InputControls(string ipAddress, ushort port, string path, ILogger logger)
         {
-            _socketClient = new WsClient();
+            _socketClient = new WebSocketClient(logger);
 
             path = path.Replace("ws:", string.Empty);
-
-            _socketClient.AutoReconnect = 0;
-            _socketClient.ID = "LgWebOs - InputControls - " + id;
-            _socketClient.Connect("ws://" + ipAddress, port, path);
+            _socketClient.Connect("ws://" + ipAddress + path, port);
         }
 
         internal void SendKey(string key)
         {
             key = string.Format("type:button\nname:{0}\n\n", key.ToUpper());
 
-            if (_socketClient.IsConnected == 1)
-            {
-                var data = Encoding.ASCII.GetBytes(key);
+            var data = Encoding.ASCII.GetBytes(key);
 
-                _socketClient.SendData(key);
+            _socketClient.SendCommand(key);
+        }
+
+        internal void Dispose()
+        {
+            Dispose(true);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            if(disposing)
+            {
+                if(_socketClient != null)
+                    _socketClient.Dispose();
             }
         }
     }

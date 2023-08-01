@@ -1,12 +1,30 @@
 namespace LgWebOs;
         // class declarations
-         class Display;
          class ExternalInput;
+         class Display;
          class App;
+     class ExternalInput 
+    {
+        // class delegates
+
+        // class events
+
+        // class functions
+        STRING_FUNCTION ToString ();
+        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
+
+        // class variables
+        INTEGER __class_id__;
+
+        // class properties
+        STRING id[];
+        STRING label[];
+        STRING icon[];
+    };
+
      class Display 
     {
         // class delegates
-        delegate FUNCTION Busy ( INTEGER state );
         delegate FUNCTION PowerState ( INTEGER state );
         delegate FUNCTION VolumeValue ( INTEGER value );
         delegate FUNCTION VolumeMuteState ( INTEGER state );
@@ -41,7 +59,6 @@ namespace LgWebOs;
         INTEGER __class_id__;
 
         // class properties
-        DelegateProperty Busy onBusy;
         DelegateProperty PowerState onPowerState;
         DelegateProperty VolumeValue onVolumeValue;
         DelegateProperty VolumeMuteState onVolumeMuteState;
@@ -53,25 +70,6 @@ namespace LgWebOs;
         DelegateProperty AppNames onAppNames;
         DelegateProperty AppIcons onAppIcons;
         INTEGER DebugMode;
-    };
-
-     class ExternalInput 
-    {
-        // class delegates
-
-        // class events
-
-        // class functions
-        STRING_FUNCTION ToString ();
-        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
-
-        // class variables
-        INTEGER __class_id__;
-
-        // class properties
-        STRING id[];
-        STRING label[];
-        STRING icon[];
     };
 
      class App 

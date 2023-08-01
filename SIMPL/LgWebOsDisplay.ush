@@ -6,12 +6,11 @@
   Sgntr=UserSPlus
   RelVrs=1
   IntStrVrs=1
-  SPlusVrs=4.05.01
+  SPlusVrs=4.06.00
   CrossCplrVrs=1.3
 [END]
 [BEGIN]
   ObjTp=Hd
-  IncludePath1=C:\\\Users\\\mathew.klucznyk\\\OneDrive - Global USS\\\Crestron Modules\\\Mat\\\SIMPLSharp Projects\\\LgWebOs\\\LgWebOs\\\LgWebOs\\\bin\\\Debug
 [END]
 [BEGIN]
   ObjTp=Symbol
@@ -105,7 +104,7 @@
   OutputSigType1=Digital
   OutputCue2=PowerIsOff
   OutputSigType2=Digital
-  OutputCue3=IsBusy
+  OutputCue3=[~UNUSED~]
   OutputSigType3=Digital
   OutputCue4=MuteIsOn
   OutputSigType4=Digital

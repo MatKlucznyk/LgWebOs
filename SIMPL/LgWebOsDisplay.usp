@@ -1,6 +1,5 @@
 #SYMBOL_NAME "LG WebOS Display"
 
-#INCLUDEPATH "C:\\\Users\\\mathew.klucznyk\\\OneDrive - Global USS\\\Crestron Modules\\\Mat\\\SIMPLSharp Projects\\\LgWebOs\\\LgWebOs\\\LgWebOs\\\bin\\\Debug"
 #USER_SIMPLSHARP_LIBRARY "LgWebOs"
 
 #DEFAULT_VOLATILE
@@ -14,7 +13,7 @@ Digital_Input _skip_, GetInputs, GetApps;
 Analog_Input SetVolume, ChangeInput, LaunchApp;
 String_Input _skip_, SendNotification[100];
 
-Digital_Output PowerIsOn, PowerIsOff, IsBusy, MuteIsOn, MuteIsOff;
+Digital_Output PowerIsOn, PowerIsOff, _skip_, MuteIsOn, MuteIsOff;
 Analog_Output VolumeValue;
 Analog_Output _skip_, _skip_, _skip_,  _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,_skip_, _skip_, _skip_,_skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_, _skip_,  TotalInputs, TotalApps, _skip_, CurrentInput;
 String_Output InputNamesXsig, InputIconsXsig, AppNamesXsig, AppIconsXsig;
@@ -254,17 +253,13 @@ Change SendNotification
     webOsDisplay.SendNotification(SendNotification);
 }
 
-callback function newBusy(integer state)
-{
-    IsBusy = state;
-}
 
 callback function newPowerState(integer state)
 {
-    if(state =1)
+    if(state)
     {
-        PowerIsOn = ON;
         PowerIsOff = OFF;
+        PowerIsOn = ON; 
     }
     else
     {
@@ -280,10 +275,10 @@ callback function newVolumeValue(integer value)
 
 callback function newVOlumeMuteState(integer state)
 {
-    if(state = 1)
+    if(state)
     {
-        MuteIsOn = ON;
         MuteIsOff = OFF;
+        MuteIsOn = ON;
     }
     else
     {
@@ -333,7 +328,6 @@ Function Main()
 
     webOsDisplay.DebugMode = DebugMode;
 
-    RegisterDelegate(webOsDisplay, onBusy, newBusy);
     RegisterDelegate(webOsDisplay, onPowerState, newPowerState);
     RegisterDelegate(webOsDisplay, onVolumeValue, newVolumeValue);
     RegisterDelegate(webOsDisplay, onVolumeMuteState, newVolumeMuteState);
