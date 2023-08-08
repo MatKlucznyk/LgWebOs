@@ -145,6 +145,11 @@ namespace LgWebOs
 
                 _isInitialized = true;
 
+                if (onPowerState != null)
+                {
+                    onPowerState(0);
+                }
+
                 _wsClient.Connect();
             }
         }
@@ -189,6 +194,10 @@ namespace LgWebOs
                                 {
                                     _heartbeatFailedTimer.Stop();
                                 }
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Invalid register response -->{0}<--", args.Payload);
                             }
                         }
                     }
@@ -387,7 +396,7 @@ namespace LgWebOs
                         onPowerState(1);
                     }
                     _wsClient.SendCommand(VerifyClientKey);
-                    _heartbeatFailedTimer.Reset(600000);
+                    _heartbeatFailedTimer.Reset(30000);
                 }
                 else
                 {
@@ -401,6 +410,7 @@ namespace LgWebOs
                     }
 
                     _isPoweredOn = false;
+                    _isRegistered = false;
 
                     if (onPowerState != null)
                     {
