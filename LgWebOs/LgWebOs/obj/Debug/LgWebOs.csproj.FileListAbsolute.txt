@@ -53,3 +53,19 @@ D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Project
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\Guss.Communications.dll
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\Guss.ModuleFramework.dll
 D:\mathew.klucznyk\OneDrive - Global USS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\ExtensionMethods.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\LgWebOs.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\LgWebOs.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\LgWebOs.pdb
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\Guss.Communications.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\Guss.ModuleFramework.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\SimplSharpCustomAttributesInterface.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\SimplSharpHelperInterface.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\SimplSharpNewtonsoft.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\SimplSharpReflectionInterface.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\WS_Client.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\XSigUtility.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\SimplSharpSQLHelperInterface.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\Newtonsoft.Json.Compact.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\bin\Debug\ExtensionMethods.dll
+C:\Users\mathew.klucznyk.GUSS\OneDrive - GUSS\Crestron Modules\Mat\SIMPLSharp Projects\LgWebOs\LgWebOs\LgWebOs\obj\Debug\LgWebOs.pdb

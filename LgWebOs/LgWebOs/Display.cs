@@ -19,7 +19,7 @@ namespace LgWebOs
     {
         #region Private Variables
         private readonly WebSocketClient _wsClient;
-        private readonly UdpClient _udpClient;
+        //private readonly UdpClient _udpClient;
         private readonly ILogger _logger;
         private readonly object _mainLock = new object();
         private readonly CEvent _notificationOkayToSendEvent = new CEvent(false, true);
@@ -103,10 +103,6 @@ namespace LgWebOs
             
 
             _wsClient = new WebSocketClient(_logger);
-            _udpClient = new UdpClient(_logger)
-            {
-                Port = 40000
-            };
 
             _wsClient.ConnectedChange += new Guss.Communications.BoolEventHandler(_wsClient_ConnectedChange);
             _wsClient.ResponseReceived += new Guss.Communications.StringEventHandler(_wsClient_ResponseReceived);
@@ -139,9 +135,6 @@ namespace LgWebOs
 
                 _wsClient.IpAddress = "ws://" + ipAddress;
                 _wsClient.Port = port;
-
-                _udpClient.IpAddress = ipAddress;
-                _udpClient.Connect();
 
                 _isInitialized = true;
 
@@ -464,9 +457,9 @@ namespace LgWebOs
                     }
                 }
 
-                _udpClient.SendCommand(wolPacket);
+                WakeOnLanUtility.SendWol(_ipAddress, _macAddress, 1);
                 CrestronEnvironment.Sleep(10);
-                _udpClient.SendCommand(wolPacket);
+                WakeOnLanUtility.SendWol(_ipAddress, _macAddress, 1);
             }
         }
 

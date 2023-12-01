@@ -1,13 +1,11 @@
-# Set the default behavior, in case people do not have core.autocrlf set.
-* -text
-*.smw -text
+# Auto detect text files and perform LF normalization
+* text=auto
 
-# Declare files that are text files
-.gitattributes text
-.gitignore text
-*.md text
+# Crestron SIMPL files
+*.smw binary
+*.umc binary
+*.ush binary
+*.usp binary
 
-# Denote all files that are truly binary and should not be modified
+# Crestron VT Pro files
 *.vtp binary
-*.zip binary
-*.vtz binary

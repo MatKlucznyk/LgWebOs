@@ -1,10 +1,69 @@
-# Crestron directories, files, or patterns not needed by version control
-*.vtz
-*.xexe/
-*.ASV
-*_xweb.c3prj/
-*.sgd*
-*.sm2
-*.sig
-SPlsWork/
+# Crestron S+/SSharp Library-----------
+# ignore the built output
 *_archive.zip
+
+#ignore SIMPL
+*.smw
+
+# ignore output files
+*.ASV
+*.bin
+*.cdm
+*.lpz
+*.sig
+*.sm2
+*.smft
+*.spz
+*.um2
+*.ush
+*.hash
+*.dip
+
+# build directory
+SPlsWork/
+
+# SSHarp
+*.cfg
+
+# DotNet
+*.swp
+*.*~
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
+
+# Visual Studio Code
+.vscode
+
+# Rider
+.idea
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+#[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Visual Studio 2015
+.vs/
+#--------------------------------------
+
+
+*.sgd_
