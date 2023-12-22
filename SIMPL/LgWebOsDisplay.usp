@@ -328,16 +328,16 @@ Function Main()
 
     webOsDisplay.DebugMode = DebugMode;
 
-    RegisterDelegate(webOsDisplay, onPowerState, newPowerState);
-    RegisterDelegate(webOsDisplay, onVolumeValue, newVolumeValue);
-    RegisterDelegate(webOsDisplay, onVolumeMuteState, newVolumeMuteState);
-    RegisterDelegate(webOsDisplay, onCurrentInputValue, newCurrentInputValue);
-    RegisterDelegate(webOsDisplay, onInputCount, newInputCount);
-    RegisterDelegate(webOsDisplay, onExternalInputNames, newExternalInputNames);
-    RegisterDelegate(webOsDisplay, onExternalInputIcons, newExternalInputIcons);
-    RegisterDelegate(webOsDisplay, onAppCount, newAppCount);
-    RegisterDelegate(webOsDisplay, onAppIcons, newAppIcons);
-    RegisterDelegate(webOsDisplay, onAppNames, newAppNames);
+    RegisterDelegate(webOsDisplay, OnPowerState, newPowerState);
+    RegisterDelegate(webOsDisplay, OnVolumeValue, newVolumeValue);
+    RegisterDelegate(webOsDisplay, OnVolumeMuteState, newVolumeMuteState);
+    RegisterDelegate(webOsDisplay, OnCurrentInputValue, newCurrentInputValue);
+    RegisterDelegate(webOsDisplay, OnInputCount, newInputCount);
+    RegisterDelegate(webOsDisplay, OnExternalInputNames, newExternalInputNames);
+    RegisterDelegate(webOsDisplay, OnExternalInputIcons, newExternalInputIcons);
+    RegisterDelegate(webOsDisplay, OnAppCount, newAppCount);
+    RegisterDelegate(webOsDisplay, OnAppIcons, newAppIcons);
+    RegisterDelegate(webOsDisplay, OnAppNames, newAppNames);
 
 
     webOsDisplay.Initialize(ID, IpAddress, Port, MacAddress);

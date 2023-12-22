@@ -1,8 +1,27 @@
 namespace LgWebOs;
         // class declarations
+         class App;
          class ExternalInput;
          class Display;
-         class App;
+     class App 
+    {
+        // class delegates
+
+        // class events
+
+        // class functions
+        STRING_FUNCTION ToString ();
+        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
+
+        // class variables
+        INTEGER __class_id__;
+
+        // class properties
+        STRING id[];
+        STRING title[];
+        STRING icon[];
+    };
+
      class ExternalInput 
     {
         // class delegates
@@ -52,6 +71,7 @@ namespace LgWebOs;
         FUNCTION LaunchApp ( INTEGER index );
         FUNCTION GetApps ();
         FUNCTION SendNotification ( STRING value );
+        FUNCTION Dispose ();
         SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
         STRING_FUNCTION ToString ();
 
@@ -59,35 +79,17 @@ namespace LgWebOs;
         INTEGER __class_id__;
 
         // class properties
-        DelegateProperty PowerState onPowerState;
-        DelegateProperty VolumeValue onVolumeValue;
-        DelegateProperty VolumeMuteState onVolumeMuteState;
-        DelegateProperty CurrentInputValue onCurrentInputValue;
-        DelegateProperty InputCount onInputCount;
-        DelegateProperty ExternalInputNames onExternalInputNames;
-        DelegateProperty ExternalInputIcons onExternalInputIcons;
-        DelegateProperty AppCount onAppCount;
-        DelegateProperty AppNames onAppNames;
-        DelegateProperty AppIcons onAppIcons;
+        DelegateProperty PowerState OnPowerState;
+        DelegateProperty VolumeValue OnVolumeValue;
+        DelegateProperty VolumeMuteState OnVolumeMuteState;
+        DelegateProperty CurrentInputValue OnCurrentInputValue;
+        DelegateProperty InputCount OnInputCount;
+        DelegateProperty ExternalInputNames OnExternalInputNames;
+        DelegateProperty ExternalInputIcons OnExternalInputIcons;
+        DelegateProperty AppCount OnAppCount;
+        DelegateProperty AppNames OnAppNames;
+        DelegateProperty AppIcons OnAppIcons;
         INTEGER DebugMode;
-    };
-
-     class App 
-    {
-        // class delegates
-
-        // class events
-
-        // class functions
-        STRING_FUNCTION ToString ();
-        SIGNED_LONG_INTEGER_FUNCTION GetHashCode ();
-
-        // class variables
-        INTEGER __class_id__;
-
-        // class properties
-        STRING id[];
-        STRING title[];
-        STRING icon[];
+        STRING CurrentInput[];
     };
 
