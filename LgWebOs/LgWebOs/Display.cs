@@ -10,7 +10,7 @@ using Guss.Communications.Sockets;
 using Guss.ModuleFramework.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using XSigUtilityLibrary.Intersystem;
+using XSigUtilityLibrary;
 
 namespace LgWebOs
 {

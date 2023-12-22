@@ -1,4 +1,4 @@
-﻿MainAssembly=LgWebOs.dll:35db1838047e3343f0095d9e9d632475
+﻿MainAssembly=LgWebOs.dll:2396333bb97ef5be78be319a863146de
 MainAssemblyMinFirmwareVersion=1.007.0017
 MainAssemblyResource=SimplSharpData.dat:820b61c48c8a2cace82957eed4cc377c
 MainAssemblyResource=SimplSharpData.dat.der:bf862965c00f3e6ec535e4e00e82d30c
@@ -45,6 +45,6 @@ DependencySource=WS_Client.dll:3f708fb4479cdc5b66be5e370c7373a9
 DependencyPath=LgWebOs.clz:WS_Client.dll
 DependencyMainAssembly=WS_Client.dll:3f708fb4479cdc5b66be5e370c7373a9
 ü
-DependencySource=XSigUtility.dll:84e598319cf7edb3c9447382ceeb5d8f
+DependencySource=XSigUtility.dll:4a60da093f1eac42baa792437c8a75f5
 DependencyPath=LgWebOs.clz:XSigUtility.dll
-DependencyMainAssembly=XSigUtility.dll:84e598319cf7edb3c9447382ceeb5d8f
+DependencyMainAssembly=XSigUtility.dll:4a60da093f1eac42baa792437c8a75f5
