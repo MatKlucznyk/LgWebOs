@@ -1,7 +1,5 @@
-﻿MainAssembly=LgWebOs.dll:4057403a8ac602b8ab93d737e6e46f2d
+﻿MainAssembly=LgWebOs.dll:23bc7dd14428d9bef579e031c4776fae
 MainAssemblyMinFirmwareVersion=1.007.0017
-MainAssemblyResource=SimplSharpData.dat:820b61c48c8a2cace82957eed4cc377c
-MainAssemblyResource=SimplSharpData.dat.der:bf862965c00f3e6ec535e4e00e82d30c
 MainAssemblyResource=SimplSharpData.dat:820b61c48c8a2cace82957eed4cc377c
 MainAssemblyResource=SimplSharpData.dat.der:bf862965c00f3e6ec535e4e00e82d30c
 ü
@@ -9,13 +7,13 @@ DependencySource=ExtensionMethods.dll:1ced40adaf42d24dc8ece893caa729dc
 DependencyPath=LgWebOs.clz:ExtensionMethods.dll
 DependencyMainAssembly=ExtensionMethods.dll:1ced40adaf42d24dc8ece893caa729dc
 ü
-DependencySource=Guss.Communications.dll:20c9177ed33a2d4e71f9305e668c5cef
+DependencySource=Guss.Communications.dll:0f5d40058d6b4345db08e916a8dbca2b
 DependencyPath=LgWebOs.clz:Guss.Communications.dll
-DependencyMainAssembly=Guss.Communications.dll:20c9177ed33a2d4e71f9305e668c5cef
+DependencyMainAssembly=Guss.Communications.dll:0f5d40058d6b4345db08e916a8dbca2b
 ü
-DependencySource=Guss.ModuleFramework.dll:d59be876048e90535b11c05e0c4af53d
+DependencySource=Guss.ModuleFramework.dll:b7f04eb9beb7fdf3c06b9b1ff257f9bd
 DependencyPath=LgWebOs.clz:Guss.ModuleFramework.dll
-DependencyMainAssembly=Guss.ModuleFramework.dll:d59be876048e90535b11c05e0c4af53d
+DependencyMainAssembly=Guss.ModuleFramework.dll:b7f04eb9beb7fdf3c06b9b1ff257f9bd
 ü
 DependencySource=Newtonsoft.Json.Compact.dll:66d4c8a51da9d0c73cefdb9711863f70
 DependencyPath=LgWebOs.clz:Newtonsoft.Json.Compact.dll

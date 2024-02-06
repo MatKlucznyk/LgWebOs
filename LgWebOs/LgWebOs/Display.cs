@@ -491,6 +491,7 @@ namespace LgWebOs
                     return;
 
                 _wsClient.SendCommand("{\"type\":\"request\",\"id\":\"powerOff\",\"uri\":\"ssap://system/turnOff\"}");
+                ResetHeartbeat(5000);
             }
         }
 
