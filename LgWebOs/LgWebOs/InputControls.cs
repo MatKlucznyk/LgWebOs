@@ -1,9 +1,10 @@
-﻿using Guss.Communications.Sockets;
+﻿using System;
+using Guss.Communications.Sockets;
 using Guss.ModuleFramework.Logging;
 
 namespace LgWebOs
 {
-    internal class InputControls
+    internal class InputControls : IDisposable
     {
         private bool _disposed;
         internal WebSocketClient SocketClient;
@@ -23,7 +24,7 @@ namespace LgWebOs
             SocketClient.SendCommand(key);
         }
 
-        internal void Dispose()
+        public void Dispose()
         {
             Dispose(true);
         }
