@@ -1,0 +1,828 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SimplSharpCloudClientInterface</name>
+    </assembly>
+    <members>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient">
+            <summary>
+            The CloudClient class allows for communication with the cloud server.
+            The CloudClient class is compatible with firmware versions 1.010.0046 and newer.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SspCloudClientRH">
+            <summary>
+            Handles responses sent from cloud in response to requests made by SimplSharpPro.CloudClient.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudDataLock">
+            <summary>
+            Must be attained before access to CloudData is granted.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudCallback">
+            <summary>
+            Used to receive messages from CloudClient
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudCallbackGarbageCollectorHandle">
+            <summary>
+            GCHandle for CloudCallback delegate 
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.MessageBufferForCallbackFromUnmangedCode">
+             <summary>
+            Buffer passed to unmanaged code for messages 
+             </summary>               
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.MessageSizeFromUnmangedCode">
+            <summary>
+            Static variable to store the message size
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudReceiveMessageCallBack(System.IntPtr,System.Int32)">
+            <summary>
+            Receives all data that is written to the queue by CloudClient.exe.
+            </summary>
+            <param name="paramData">Will always be null.  Was left in to keep compatibility.</param>
+            <param name="size">Size of data that is written</param>
+            <returns>Returns 0 if read was successful returns -1 if data of 0 size is read or if an exception was thrown.</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnUploadFileToCloud(Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudArgs)">
+            <summary>
+            Triggers OnUploadFileToCloud event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnDownloadFileFromCloud(Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs)">
+            <summary>
+            Triggers OnDownloadFileFromCloud event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnDownloadListFromCloud(Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudArgs)">
+            <summary>
+            Triggers OnDownloadListFromCloud event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnCancelTransaction(Crestron.SimplSharp.SimplSharpCloudClient.OnCancelTransactionEventArgs)">
+            <summary>
+            Triggers OnCancelTransaction event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnResetFileListingTransaction(Crestron.SimplSharp.SimplSharpCloudClient.OnResetFileListingTransactionEventArgs)">
+            <summary>
+            Trigger Reset File listing
+            </summary>
+            <param name="paramArgs"></param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerCloudStatusChange(Crestron.SimplSharp.SimplSharpCloudClient.CloudStatusEventArgs)">
+            <summary>
+            Triggers CloudStatusChange event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnGenericMessage(Crestron.SimplSharp.SimplSharpCloudClient.OnGenericMessageFromCloudArgs)">
+            <summary>
+            Triggers OnGenericMessage event.
+            </summary>
+            <param name="paramArgs">Event args to pass when triggering event.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.TriggerOnCloudActivationKeyChangeMessage(Crestron.SimplSharp.SimplSharpCloudClient.CloudActivationKeyArgs)">
+            <summary>
+            Triggers Cloud Activation Key
+            </summary>
+            <param name="paramArgs"></param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.UploadFileToCloud(System.String,System.String,Crestron.SimplSharp.SimplSharpCloudClient.eBitField)">
+            <summary>
+            Uploads a file to the cloud.
+            </summary>
+            <param name="paramPath">Absolute path to the file that is to be uploaded.</param>
+            <param name="paramTag">Tag for file group that file will be added to.  File tag can be up to 50 characters long.</param>
+            <param name="paramBitField">Used to indicate type of file.</param>
+            <returns>Status of request.</returns>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">Path or Tag not valid.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.DownloadFileFromCloud(System.String,System.UInt32,System.String)">
+            <summary>
+            Downloads a file from the cloud.
+            </summary>
+            <param name="paramTag">Tag of the file group that the file is in.</param>
+            <param name="paramIndex">The current index of the file within the file group.  This value is returned in the argument when you call DownloadListFromCloud.</param>
+            <param name="paramPath">Absolute path to location where file will be downloaded to.  All directories in path must exist.  Can include a new file name for the file that is being downloaded.  If includes a new file name for file
+            the file name must include an extension.</param>
+            <returns>Status of request.</returns>
+            <remarks>DownloadListFromCloud must be called before this method is called, and the index returned in the list must be used in order to ensure that the file is located.</remarks>
+            <remarks>Index returned from DownloadListFromCloud must be used as index to download file.</remarks>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">Tag, Index, or Path not valid.</exception>
+            <exception cref="T:Crestron.SimplSharp.CrestronIO.DirectoryNotFoundException">Directory not found.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.DownloadListFromCloud(System.String)">
+            <summary>
+            Allows retrieval of a list of the files that are in a file group.
+            </summary>
+            <param name="paramTag">File group tag.</param>
+            <returns>Status of request.</returns>
+            <remarks>Before a file can be downloaded from a file group this method must be called at least once for that file group.</remarks>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">paramTag not valid.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.UploadFileToCloud(System.String,System.String,Crestron.SimplSharp.SimplSharpCloudClient.eBitField,System.UInt32)">
+            <summary>
+            Uploads a file to the cloud.
+            </summary>
+            <param name="paramPath">Absolute path to the file that is to be uploaded.</param>
+            <param name="paramTag">Tag for file group that file will be added to.  File tag can be up to 50 characters long.</param>
+            <param name="paramBitField">Used to indicate type of file.</param>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns>Status of request.</returns>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">Path or Tag not valid.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SetUploadRequest(Crestron.CloudClient.CloudManagedtoNativeInterface.CLOUD_APP_REQUEST_FILE_MESSAGE_STRUCT@,Crestron.SimplSharp.SimplSharpCloudClient.eBitField)">
+            <summary>
+            Sets BitField for message.
+            </summary>
+            <param name="uploadRequest">Message to assign BitField to.</param>
+            <param name="BitField">BitField that will be used to determine what to assign.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SetUploadRequestForProgram0(Crestron.CloudClient.CloudManagedtoNativeInterface.CLOUD_APP_REQUEST_FILE_MESSAGE_STRUCT@,Crestron.SimplSharp.SimplSharpCloudClient.eBitField)">
+            <summary>
+            Sets BitField for message when request was sent from program 0.
+            </summary>
+            <param name="uploadRequest">Message to assign BitField to.</param>
+            <param name="BitField">BitField that will be used to determine what to assign.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.DownloadFileFromCloud(System.String,System.Guid,System.String,System.UInt32)">
+            <summary>
+            Downloads a file from the cloud.
+            </summary>
+            <param name="paramTag">Tag of the file group that the file is in.</param>
+            <param name="paramFileGuid">The GUID for the file to be downloaded.  This value is returned in the argument when you call DownloadListFromCloud.</param>
+            <param name="paramPath">Absolute path to location where file will be downloaded to.  All directories in path must exist.  Can include a new file name for the file that is being downloaded.  If includes a new file name for file
+            the file name must include an extension.</param>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns>Status of request.</returns>
+            <remarks>DownloadListFromCloud must be called before this method is called, and the index returned in the list must be used in order to ensure that the file is located.</remarks>
+            <remarks>Index returned from DownloadListFromCloud must be used as index to download file.</remarks>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">Tag, Guid, or Path not valid.</exception>
+            <exception cref="T:Crestron.SimplSharp.CrestronIO.DirectoryNotFoundException">Directory not found.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.InitiateFileDownloadOperation(System.String,System.UInt32,System.Guid,System.String)">
+            <summary>
+            Function to formulate and send out the FileDownload operation to the cloud
+            </summary>
+            <param name="paramTag"> Tag to download file from</param>
+            <param name="paramTransactionId"> transaction Id for this particular operation</param>
+            <param name="paramFileGuid"> Guid to the file to download</param>
+            <param name="paramPath"> path where to </param>
+            <returns></returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.DownloadFileFromCloud(System.String,System.UInt32,System.String,System.UInt32)">
+            <summary>
+            Downloads a file from the cloud.
+            </summary>
+            <param name="paramTag">Tag of the file group that the file is in.</param>
+            <param name="paramIndex">The current index of the file within the file group.  This value is returned in the argument when you call DownloadListFromCloud.</param>
+            <param name="paramPath">Absolute path to location where file will be downloaded to.  All directories in path must exist.  Can include a new file name for the file that is being downloaded.  If includes a new file name for file
+            the file name must include an extension.</param>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns>Status of request.</returns>
+            <remarks>DownloadListFromCloud must be called before this method is called, and the index returned in the list must be used in order to ensure that the file is located.</remarks>
+            <remarks>Index returned from DownloadListFromCloud must be used as index to download file.</remarks>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">Tag, Index, or Path not valid.</exception>
+            <exception cref="T:Crestron.SimplSharp.CrestronIO.DirectoryNotFoundException">Directory not found.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.ResetFileListOnCloud(System.UInt32)">
+            <summary>
+            Method to reset the file listing on the cloud
+            </summary>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.DownloadListFromCloud(System.String,System.UInt32)">
+            <summary>
+            Allows retrieval of a list of the files that are in a file group.
+            </summary>
+            <param name="paramTag">File group tag.</param>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns>Status of request.</returns>
+            <remarks>Before a file can be downloaded from a file group this method must be called at least once for that file group.</remarks>
+            <remarks>If this operation is cancelled it will need to be executed again for the file group before a file can be downloaded 
+            from that file group.</remarks>
+            <exception cref="T:System.NotSupportedException">Not supported.</exception>
+            <exception cref="T:System.ArgumentException">paramTag not valid.</exception>
+            <exception cref="T:System.Exception">Unexpected error.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CancelTransaction(System.UInt32)">
+            <summary>
+            Cancels the specified transaction.
+            </summary>
+            <param name="paramTransactionId">Transaction ID of transaction to cancel.</param>
+            <returns>Status of cancellation request.</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SendGenericMessage(System.Byte[])">
+            <summary>
+            Used to send generic messages to the cloud.  
+            </summary>
+            <param name="paramGenericMessage">Message to be sent to the cloud.</param>
+            <returns>Status of request.</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SendGenericMessage(System.Byte[],System.UInt32)">
+            <summary>
+            Used to send generic messages to the cloud.  
+            </summary>
+            <param name="paramGenericMessage">Message to be sent to the cloud.</param>
+            <param name="paramTransactionId">Used to identify the request.  Will be the transaction ID number in the event args that are returned in response to this request.</param>
+            <returns>Status of request.</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.ResetCloudUrl">
+            <summary>
+            Resets the cloud registration url to default
+            </summary>
+            <exception cref="T:System.Exception">The CloudClient feature is not enabled</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.SendHydrogenAVFConfigReady">
+            <summary>
+            This should be called by AVF after the application configs have been written to the data store
+            </summary>
+            <returns>true if request was successfully sent; false otherwise</returns>
+            <remarks>This should only be called once during start up</remarks>
+            <remarks> This requires firmware ver 1.503.0000 and higher.</remarks>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnUploadFileToCloud">
+            <summary>
+            This event is fired when a response to an upload file request is received.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnDownloadFileFromCloud">
+            <summary>
+            This event is fired when a response to a download file request is received.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnDownloadListFromCloud">
+            <summary>
+            This event is fired when a response to a download list request is received.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnCancelTransaction">
+            <summary>
+            This event is fired when a response to a cancel request is received.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnResetFileListingTransaction">
+            <summary>
+            This event is fired when a response to a reset file listing is received
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudStatusChange">
+            <summary>
+            This event is fired upon startup of the application and when the status of the cloud changes.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.HydrogenConnectionStateChange">
+            <summary>
+            This event is fired when the connection state change with Hydrogen changes.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnGenericMessageFromCloud">
+            <summary>
+            This event is fired when a generic message is received from the cloud.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnActivationKeyMessageFromCloud">
+            <summary>
+            This event is fired when the activation key is received from the cloud.
+            </summary>
+            <remarks> This requires firmware ver 1.502.0000 and higher.</remarks>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudStatus">
+            <summary>
+            Indicates the devices registration status with the cloud.  If the device is not registered with the cloud it will indicate the reason why.  
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.ActivationKey">
+            <summary>
+            Returns the activation key.
+            Only valid when the <see cref="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudStatus"/> is <see cref="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.Registered"/>
+            The <see cref="E:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.OnActivationKeyMessageFromCloud"/> handler will fire when the cloud activation key changes
+            </summary>
+            <remarks> This requires firmware ver 1.502.0000 and higher.</remarks>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.HydrogenConnectionState">
+            <summary>
+            Returns the current connection state with the Hydrogen Cloud.
+            </summary>
+            <remarks> This requires firmware ver 1.503.0000 and higher.</remarks>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.CloudUrl">
+            <summary>
+            Gets or sets the cloud registration url
+            </summary>
+            <exception cref="T:System.ArgumentException">Url is not a valid HTTP/HTTPS registration url</exception>
+            <exception cref="T:System.Exception">The CloudClient feature is not enabled</exception>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.HydrogenEnable">
+            <summary>
+            Property to enable/disable the Hydrogen feature.
+            The Set requires a reboot for the changes to take into effect. If we change the value using a Set/console command but have not rebooted, then the Get might not return the 
+            proper value. The Get always returns the last set value.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudClient.StartOnBoot">
+            <summary>
+            Property to enable/disable the Cloud feature.
+            The Set requires a reboot for the changes to take into effect. If we change the value using a Set/console command but have not rebooted, then the Get might not return the 
+            proper value. The Get always returns the last set value.
+            This will disable all cloud related features.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientEventHandler.HandleEventArgs">
+            <summary>
+            A seperate thread that reads event args off of the queue that the response handler adds them to.  
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientEventHandler.CrestronEnvironment_ProgramStatusEventHandler(Crestron.SimplSharp.eProgramStatusEventType)">
+            <summary>
+            Handles program stopping event
+            </summary>
+            <param name="programEventType"></param>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientEventHandler.TriggerEventArg(Crestron.SimplSharp.SimplSharpCloudClient.CloudArgs)">
+            <summary>
+            Depending on event type casts to the correct event arg and triggers the correct event passing the event arg.
+            </summary>
+            <param name="paramEventArgs">Event argument for user.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudHandler">
+            <summary>
+            UploadFileToCloud delegate.
+            </summary>
+            <param name="args">The response to the upload file request.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudHandler">
+            <summary>
+            DownloadFileFromCloud delegate.
+            </summary>
+            <param name="args">The response to the download file request.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudHandler">
+            <summary>
+            DownloadListFromCloud delegate.
+            </summary>
+            <param name="args">The response to the download list request.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnCancelTransactionHandler">
+            <summary>
+            CancelTransaction delegate.
+            </summary>
+            <param name="args">The response to the cancel request.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnResetFileListingTransactionHandler">
+            <summary>
+            Reset file listing delegate
+            </summary>
+            <param name="args">The response to the reset file listing request</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudStatusHandler">
+            <summary>
+            CloudStatusChange delegate.
+            </summary>
+            <param name="args">Contains the status of the cloud.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.HydrogenConnectionStateHandler">
+            <summary>
+            HydrogenConnectionState change delegate.
+            </summary>
+            <param name="args">Contains the status of the Hydrogen Cloud</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.GenericMessageHandler">
+            <summary>
+            Generic message delegate.
+            </summary>
+            <param name="args">Contains the generic message.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.ActivationKeyMessageHandler">
+            <summary>
+            Activation key received delegate
+            </summary>
+            <param name="args"> Contains the activation key</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudArgs">
+            <summary>
+            Base class for all cloud client event argument classes.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudArgs.CloudArgsType">
+            <summary>
+            The type of event args that this is.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudArgs.TransactionId">
+            <summary>
+            The transaction ID of the request.  
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudActivationKeyArgs">
+            <summary>
+            Cloud Activation key event args
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudActivationKeyArgs.ActivationKey">
+            <summary>
+            Returns the activation key for the cloud
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudArgs">
+            <summary>
+            Response from request to upload a file.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudArgs.Path">
+            <summary>
+            The file path that was used in the upload request.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudArgs.Tag">
+            <summary>
+            The tag that was used in the upload request. 
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnUploadFileToCloudArgs.errorCode">
+            <summary>
+            The status of the upload request.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs">
+            <summary>
+            Response from request to download a file.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs.Tag">
+            <summary>
+            Request file group tag.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs.Index">
+            <summary>
+            Request file index.  This is the index returned in the argument when DownloadListFromCloud is called.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs.Path">
+            <summary>
+            Request destination path.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadFileFromCloudArgs.errorCode">
+            <summary>
+            The status of the download file request.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudArgs">
+            <summary>
+            Response from request to download a list.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudArgs.Files">
+            <summary>
+            Collection of files that are in the requested file group.  
+            Will be null if request failed. 
+            The index that can be found in each CloudFileInformation object in the collection
+            is also the index to that object in the collection. 
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudArgs.Tag">
+            <summary>
+            Request file group tag.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnDownloadListFromCloudArgs.errorCode">
+            <summary>
+            The status of the download list request.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnGenericMessageFromCloudArgs">
+            <summary>
+            Generic message that was sent from the cloud.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnGenericMessageFromCloudArgs.GenericMessage">
+            <summary>
+            Generic message.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnCancelTransactionEventArgs">
+            <summary>
+            Response from request to cancel a transaction.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnCancelTransactionEventArgs.errorCode">
+            <summary>
+            The status of the cancel request.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.OnResetFileListingTransactionEventArgs">
+            <summary>
+            Reset File Listing message response.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.OnResetFileListingTransactionEventArgs.errorCode">
+            <summary>
+            The status of the reset file listing request.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudStatusEventArgs">
+            <summary>
+            Communicates the status of the cloud.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudStatusEventArgs.Status">
+            <summary>
+            The status of the cloud.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.HydrogenConnectionStateEventArgs">
+            <summary>
+            Indicates the present state with the Hydrogen Cloud.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.HydrogenConnectionStateEventArgs.State">
+            <summary>
+            The connection state of the Hydrogen cloud.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eHydrogenConnectionState">
+            <summary>
+            Indicates if the device is online or offline with the Hydrogen Cloud.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eHydrogenConnectionState.NA">
+            <summary>
+            Currently unavailable
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eHydrogenConnectionState.Online">
+            <summary>
+            Connected to the Hydrogen Cloud
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eHydrogenConnectionState.Offline">
+            <summary>
+            Not connected to the Hydrogen Cloud
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus">
+            <summary>
+            Indicates if device is registered with the cloud or the cause of why the device is not registered.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.Registered">
+            <summary>
+            The unit was registered with the cloud.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.Unregistered">
+            <summary>
+            The unit was unregistered with the cloud.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.UrlUnresolved">
+            <summary>
+            The Url could not be resolved.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.NetworkError">
+            <summary>
+            A link is down.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.CloudOffline">
+            <summary>
+            There is no response from the cloud.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudStatus.Unknown">
+            <summary>
+            The cloud is in an unknown state.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestResultCodes">
+            <summary>
+            Result of cloud request.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestResultCodes.Pending">
+            <summary>
+            Request was sent to cloud.  Response is pending.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestResultCodes.Error">
+            <summary>
+            An error occurred preventing the request from being sent to the cloud.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eCancellationRequestResultCodes">
+            <summary>
+            Cancellation request result codes.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCancellationRequestResultCodes.TransactionAlreadyComplete">
+            <summary>
+            The transaction cannot be cancelled because it has already been completed.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCancellationRequestResultCodes.TransactionNotFound">
+            <summary>
+            The transaction ID could not be found.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCancellationRequestResultCodes.TransactionCancelledSuccessfully">
+            <summary>
+            Transaction was cancelled successfully.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCancellationRequestResultCodes.Error">
+            <summary>
+            An error occurred when attempting to cancel the transaction.  
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.CloudFileInformation">
+            <summary>
+            Contains information on a file that is in a file group.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudFileInformation.Name">
+            <summary>
+            Name of the file.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudFileInformation.Index">
+            <summary>
+            Index of the file.  This is the index that is used when calling DownloadFileFromCloud.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudFileInformation.FileGuid">
+            <summary>
+            Guid of the file.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.CloudFileInformation.DateAndTime">
+            <summary>
+            Date and time of the file on the server.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eBitField">
+            <summary>
+            Bit field used to determine how to save the file.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eBitField.GoldenFile">
+            <summary>
+            Indicates to cloud to keep a single copy of file.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eBitField.FileGroup">
+            <summary>
+            Indicates that file is part of a group of files.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode">
+            <summary>
+            Enumeration that defines cloud request error codes.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.Completed">
+            <summary>
+            Request completed successfully.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.Failed">
+            <summary>
+            Request failed.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.NotEnoughCloudSpace">
+            <summary>
+            Not enough cloud space.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.CloudNotRegistered">
+            <summary>
+            Cloud not registered.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.URLNotResolved">
+            <summary>
+            URL not resolved.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.NetworkError">
+            <summary>
+            Network error.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.InvalidRequest">
+            <summary>
+            Invalid request.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.DeployCodeExpired">
+            <summary>
+            Deployment code has expired
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudRequestErrorCode.DeployCodeInvalid">
+            <summary>
+            Deployment code is invalid
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType">
+            <summary>
+            Specifies what type of event args are being returned.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.FileUpload">
+            <summary>
+            File upload.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.FileListDownload">
+            <summary>
+            File list download.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.FileDownload">
+            <summary>
+            File download.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.CancelTransaction">
+            <summary>
+            Cancel transaction.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.CloudStatus">
+            <summary>
+            Cloud status.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.GenericMessage">
+            <summary>
+            Generic message between the application and the cloud
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.ActivationKeyMessage">
+            <summary>
+            Activation Key received
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.HydrogenConnectionStateChange">
+            <summary>
+            The connection state with Hydrogen changed
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.SimplSharpCloudClient.eCloudEventArgsType.ResetFileListing">
+            <summary>
+            File listing on the cloud has been reset
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientResponseHandler">
+            <summary>
+            Processes all data read off of the queue.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientResponseHandler.ParseFileRequestResponse">
+            <summary>
+            Request can be for a file upload or download
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientResponseHandler.ParseRestoreFileListResponse">
+            <summary>
+            Method to parse the file restore response
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.SimplSharpCloudClient.SspCloudClientResponseHandler.EventHandlerDisposed">
+            <summary>
+            Flag to indicate if the event handler was disposed. This happens on shutdown of the program.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.SimplSharpCloudClient.IntPtrExtensions">
+            <summary>
+            Used to increment pointer.  
+            </summary>
+        </member>
+    </members>
+</doc>

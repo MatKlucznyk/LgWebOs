@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SimplSharpProgrammingInterfaces</name>
+    </assembly>
+    <members>
+        <member name="T:Crestron.SimplSharp.Python.SimplSharpPythonInterface">
+            <summary>
+            Class for interfacing to a Python Module from Simpl Sharp.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.Python.SimplSharpPythonInterface.ProgramFriendlyNameOrRoomId">
+            <summary>
+            Prorgam Friendly Name or RoomId.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.SimplSharpPythonInterface.Supported">
+            <summary>
+            Returns True if python modules are supported.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.IsShowExtraEnabled">
+            <summary>
+            Method to to and read the state of the show extra flag. 
+            </summary>
+            <returns>'true' - indicating showextra is enabled for this process; 'false' otherwise.</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.#cctor">
+            <summary>
+            Initialize the static instance of the class.  
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.PythonManagerCallback(System.String)">
+            <summary>
+            Callback to recieve data from python manager via JsonDb
+            </summary>
+            <param name="json">JSON Message received</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.Shutdown">
+            <summary>
+            Shutdown the static instance of the class.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.Run(System.String,System.String,System.EventHandler{Crestron.SimplSharp.Python.PythonDataReceivedEventArgs},System.String[])">
+            <summary>
+            Method to start a specified instance of the module.The module should have the "crestron_main" point defined.
+            The <paramref name="uniqueIdentifier"/> specifies a unique Id for this instance. We cannot have two instances with the same <paramref name="uniqueIdentifier"/> running.
+            </summary>
+            <param name="uniqueIdentifier">Unique Identifier for this instance. A maximum length of 128 characters is supported.</param>
+            <param name="moduleArguments">An array of strings to pass as parameters to the instance</param>
+            <param name="modulePath">Path to the module to load. <see cref="T:Crestron.SimplSharp.CrestronIO.Path"/></param>
+            <param name="callbackMethod">Callback which is invoked whenever any data is received from that specific instance.</param>
+            <returns>Returns a <see cref="T:Crestron.SimplSharp.Python.PythonModuleInstance"/> for the specific instance.</returns>
+            <exception cref="T:System.ArgumentNullException">The specified argument is null </exception>
+            <exception cref="T:Crestron.SimplSharp.CrestronIO.FileNotFoundException">The specified modulePath is not valid.</exception>
+            <exception cref="T:System.SystemException">The Python support on this device is not running as expected.</exception>\
+            <exception cref="T:System.NotSupportedException">Python support is not avaiable.</exception>
+            <exception cref="T:System.InvalidOperationException">The uniqueIdentifier specified is already in use by a running module.</exception>
+            <exception cref="T:System.ArgumentException">The uniquerIdentifier is an empty string.</exception>
+            <exception cref="T:System.ArgumentOutOfRangeException">The length of the uniqueIdentifier argument is above the maximum supported length of 128 characters.</exception>
+            <example> The python module being invoked should have the "crestron_main" entry point defined. If not defined the module is not run. The status of the module instance return will indicate this.</example>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.SendData(System.String,System.String)">
+            <summary>
+            Method to send data to the specified instance. The instance is specified using the <paramref name="uniqueIdentifier"/>. This call will not store the data.
+            </summary>
+            <param name="uniqueIdentifier"> Unique Identifier of the instance to send to. The instance need not be running for us to send data to that particular instance.</param>
+            <param name="jsonObjectToSend"> String to send to the specified instance</param>
+            <returns>True if we are able to send data to the specified instance</returns>
+            <exception cref="T:System.ArgumentNullException"> Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.SendData(System.String,System.String,Crestron.SimplSharp.JsonDb.eSaveType)">
+            <summary>
+            Method to send data to the specified instance. The instance is specified using the <paramref name="uniqueIdentifier"/>
+            </summary>
+            <param name="uniqueIdentifier"> Unique Identifier of the instance to send to. The instance need not be running for us to send data to that particular instance.</param>
+            <param name="jsonObjectToSend"> String to send to the specified instance</param>
+            <param name="saveType"> Indicates whether the data should be saved across program restarts/reboots or should only persist in memory.</param>
+            <returns> True if we are able to send data to the specified instance</returns>
+            <exception cref="T:System.ArgumentNullException"> Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.SendData(System.String,System.String,System.String)">
+            <summary>
+            Method to send data to the specified instance under a different program. The instance is specified using the <paramref name="uniqueIdentifier"/> and the program is specified 
+            using the <paramref name="programFriendlyNameToSendDataTo"/>. This call will not store the data.
+            </summary>
+            <param name="programFriendlyNameToSendDataTo">Friendly name of the program to send data to.</param>
+            <param name="uniqueIdentifier">Unique Identifier of the instance to send to. The instance need not be running for us to send data to that particular instance.</param>
+            <param name="jsonObjectToSend">String to send to the specified instance</param>
+            <returns>True if we are able to send data to the specified instance</returns>
+            <exception cref="T:System.ArgumentNullException">Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.SendData(System.String,System.String,System.String,Crestron.SimplSharp.JsonDb.eSaveType)">
+            <summary>
+            Method to send data to the specified instance under a different program. The instance is specified using the <paramref name="uniqueIdentifier"/> and the program is specified using the <paramref name="programFriendlyNameToSendDataTo"/>
+            </summary>
+            <param name="programFriendlyNameToSendDataTo">Friendly name of the program to send data to.</param>
+            <param name="uniqueIdentifier">Unique Identifier of the instance to send to. The instance need not be running for us to send data to that particular instance.</param>
+            <param name="jsonObjectToSend">String to send to the specified instance</param>
+            <param name="saveType">Indicates whether the data should be saved across program restarts/reboots or should only persist in memory.</param>
+            <returns>True if we are able to send data to the specified instance</returns>
+            <exception cref="T:System.ArgumentNullException">Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.ClearData(System.String)">
+            <summary>
+            Method to clear out all the data for the specified instance. The instance is specified using the <paramref name="uniqueIdentifier"/> 
+            </summary>
+            <param name="uniqueIdentifier"> Unique Identifier of the instance to clear data from. The instance need not be running for us to send data to that particular instance.</param>
+            <returns>True if we are able to clear out the data</returns>
+            <exception cref="T:System.ArgumentNullException"> Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.GetData(System.String)">
+            <summary>
+            Method to read all the stored data for the specified instance. The instance is specified using the <paramref name="uniqueIdentifier"/> 
+            </summary>
+            <param name="uniqueIdentifier">Unique Identifier of the instance to read data from. The instance need not be running for us to send data to that particular instance.</param>
+            <returns> string containing the json data for the specified instance.</returns>
+            <exception cref="T:System.ArgumentNullException"> Specified Argument is null.</exception>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.SimplSharpPythonInterface.GetData(System.String,System.String)">
+            <summary>
+            Method to read all the stored data for the specified instance under a different program.  The instance is specified using the <paramref name="uniqueIdentifier"/> and the program is specified using the <paramref name="programFriendlyNameToQueryFrom"/>
+            </summary>
+            <param name="programFriendlyNameToQueryFrom">Friendly name of the program to query data from.</param>
+            <param name="uniqueIdentifier">Unique Identifier of the instance to read data from. The instance need not be running for us to send data to that particular instance.</param>
+            <returns>String containing the json data for the specified instance.</returns>
+            <exception cref="T:System.ArgumentNullException">Specified Argument is null.</exception>
+        </member>
+        <member name="T:Crestron.SimplSharp.Python.eModuleInstanceState">
+            <summary>
+            Enum for the state of a python module
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.Python.eModuleInstanceState.Unknown">
+            <summary>
+            Invalid State (not running).
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.Python.eModuleInstanceState.Running">
+            <summary>
+            Instance is currently running.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.Python.eModuleInstanceState.Stopped">
+            <summary>
+            Instance is stopped.
+            </summary>
+        </member>
+        <member name="F:Crestron.SimplSharp.Python.eModuleInstanceState.Failed">
+            <summary>
+            Instance has failed to run. See <see cref="P:Crestron.SimplSharp.Python.PythonModuleInstance.StateInformation"/> for details.
+            </summary>
+        </member>
+        <member name="T:Crestron.SimplSharp.Python.PythonDataReceivedEventArgs">
+            <summary>
+            Event information the describe the data returned from a python module.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonDataReceivedEventArgs.Data">
+            <summary>
+            JSON Data received from the python module.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonDataReceivedEventArgs.#ctor(System.String)">
+            <summary>
+            Constructor to generate new event information.
+            </summary>
+            <param name="jsonData">String containing the JSON data received.</param>
+        </member>
+        <member name="T:Crestron.SimplSharp.Python.PythonModuleInstance">
+            <summary>
+            Class for defining an instance of a python module which was loaded using the <see cref="T:Crestron.SimplSharp.Python.SimplSharpPythonInterface"/>
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonModuleInstance.UniqueIdentifier">
+            <summary>
+            Unique Identifier of this instance.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonModuleInstance.Arguments">
+            <summary>
+            Arguments to provided to this instance.
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonModuleInstance.File">
+            <summary>
+            Path on disk for this instance.
+            </summary>
+        </member>
+        <member name="E:Crestron.SimplSharp.Python.PythonModuleInstance.DataReceived">
+            <summary>
+            Event triggered when data is received from this instance.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.OnDataReceived(System.String)">
+            <summary>
+            Function to trigger OnDataReceived event
+            </summary>
+            <param name="json">JSON Data received.</param>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.GetData">
+            <summary>
+            Method to get data from this instance.
+            </summary>
+            <returns>True if we are able to send data to the specified instance</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.SendData(System.String)">
+            <summary>
+            Method to send data to this instance.
+            </summary>
+            <param name="jsonObjectToSend"> String to send to the specified instance</param>
+            <returns>True if we are able to send data to the specified instance</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.SendData(System.String,Crestron.SimplSharp.JsonDb.eSaveType)">
+            <summary>
+            Method to send data to this instance.
+            </summary>
+            <param name="jsonObjectToSend"> String to send to the specified instance</param>
+            <param name="saveType"> Indicates whether the data should be saved across program restarts/reboots or should only persist in memory.</param>
+            <returns>True if we are able to send data to the specified instance</returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.Restart">
+            <summary>
+            Method to restart this module after it has already stopped. 
+            </summary>
+            <returns>'true' - if the module was successfully restarted</returns>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonModuleInstance.State">
+            <summary>
+            Property to get the state of the Instance. <see cref="T:Crestron.SimplSharp.Python.eModuleInstanceState"/>
+            </summary>
+        </member>
+        <member name="P:Crestron.SimplSharp.Python.PythonModuleInstance.StateInformation">
+            <summary>
+            Property to provide details of the current running state.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.Python.PythonModuleInstance.ToString">
+            <summary>
+            Override of ToString to return some details of this module instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crestron.SimplSharp.RestartThrottle.StoreStartTime">
+            <summary>
+            Method to store the start timestamp.
+            </summary>
+        </member>
+        <member name="M:Crestron.SimplSharp.RestartThrottle.RestartAllowed(System.Int32@)">
+            <summary>
+            Method to determine if we are allowed to restar the process based on the number of restart queries.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Crestron.WatchdogInterface.RegisterAssociatedProcess(System.UInt32)">
+            <summary>
+            Method to register an associated PID to this application instance.
+            </summary>
+            <param name="pid">PID of the process to associate.</param>
+        </member>
+        <member name="M:Crestron.WatchdogInterface.UnRegisterAssociatedProcess(System.UInt32)">
+            <summary>
+            Method to un-register an associated PID from this application instance.
+            </summary>
+            <param name="pid">PID of the process to un-associate.</param>
+        </member>
+    </members>
+</doc>

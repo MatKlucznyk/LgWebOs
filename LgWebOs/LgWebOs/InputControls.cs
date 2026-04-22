@@ -1,23 +1,14 @@
 ﻿using System;
-using Guss.Communications.Sockets;
-using Guss.Communications.ModuleFramework.Logging;
+using Avg.Communications.Sockets;
+using Avg.ModuleFramework.Logging;
 
 namespace LgWebOs
 {
     internal class InputControls : IDisposable
     {
-        private bool _disposed;
         private readonly WebSocketClient _socketClient;
 
-        internal bool IsConnected
-        {
-            get
-            {
-                if (_socketClient == null) return false;
-
-                return _socketClient.IsConnected;
-            }
-        }
+        internal bool IsConnected => _socketClient?.IsConnected ?? false;
 
         internal InputControls(string ipAddress, ushort port, string path, ILogger logger)
         {
@@ -44,15 +35,12 @@ namespace LgWebOs
 
         private void Dispose(bool disposing)
         {
-            if (_disposed)
+            if (_socketClient?.Disposed ?? true)
                 return;
 
-            _disposed = true;
-
-            if(disposing)
+            if (disposing)
             {
-                if(_socketClient != null)
-                    _socketClient.Dispose();
+                _socketClient?.Dispose();
             }
         }
     }

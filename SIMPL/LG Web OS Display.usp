@@ -301,29 +301,54 @@ eventhandler newInputCount(Display sender, UShortEventArgs args)
 	TotalInputs = args.Payload;
 }
 
-eventhandler newExternalInputNames(Display sender, StringEventArgs args)
+eventhandler newExternalInputNames(Display sender, StringArrayEventArgs args)
 {
-	InputNamesXsig = args.Payload;
+	integer cnt, i;
+
+	cnt = args.Count;
+
+	for(i = 0 to (cnt - 1))
+	{
+		InputNamesXsig = args.XSigValues[i];
+	}
+	TotalInputs = cnt;
 }
 
-eventhandler newExternalInputIcons(Display sender, StringEventArgs args)
+eventhandler newExternalInputIcons(Display sender, StringArrayEventArgs args)
 {
-	InputIconsXsig = args.Payload;
+	integer cnt, i;
+
+	cnt = args.Count;
+
+	for(i = 0 to cnt - 1)
+	{
+		InputIconsXsig = args.XSigValues[i];
+	}
 }
 
-eventhandler newAppCount(Display sender, UShortEventArgs args)
+eventhandler newAppNames(Display sender, StringArrayEventArgs args)
 {
-	TotalApps = args.Payload;
+	integer cnt, i;
+
+	cnt = args.Count;
+
+	for(i = 0 to cnt - 1)
+	{
+		AppNamesXsig = args.XSigValues[i];
+	}
+	TotalApps = cnt;
 }
 
-eventhandler newAppNames(Display sender, StringEventArgs args)
+eventhandler newAppIcons(Display sender, StringArrayEventArgs args)
 {
-	AppNamesXsig = args.Payload;
-}
+	integer cnt, i;
 
-eventhandler newAppIcons(Display sender, StringEventArgs args)
-{
-	AppIconsXsig = args.Payload;
+	cnt = args.Count;
+
+	for(i = 0 to cnt - 1)
+	{
+		AppIconsXsig = args.XSigValues[i];
+	}
 }
 
 Function Main()
@@ -336,10 +361,8 @@ Function Main()
     RegisterEvent(_disp, VolumeValueChanged, newVolumeValue);
     RegisterEvent(_disp, VolumeMuteStateChanged, newVolumeMuteState);
     RegisterEvent(_disp, CurrentInputValueChanged, newCurrentInputValue);
-    RegisterEvent(_disp, InputCountChanged, newInputCount);
     RegisterEvent(_disp, ExternalInputNamesChanged, newExternalInputNames);
     RegisterEvent(_disp, ExternalInputIconsChanged, newExternalInputIcons);
-    RegisterEvent(_disp, AppCountChanged, newAppCount);
     RegisterEvent(_disp, AppIconsChanged, newAppIcons);
     RegisterEvent(_disp, AppNamesChanged, newAppNames);
 	

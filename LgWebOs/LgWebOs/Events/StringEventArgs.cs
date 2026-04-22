@@ -1,4 +1,4 @@
-﻿using Guss.Communications.ModuleFramework.Events.EventArguments;
+﻿using Avg.ModuleFramework.Events;
 
 namespace LgWebOs.Events
 {
